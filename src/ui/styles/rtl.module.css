@@ -1,0 +1,37 @@
+/* RTL layout rules for Hebrew */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Flip horizontal elements for RTL */
+.rtl .flip-rtl {
+  transform: scaleX(-1);
+}
+
+/* Input fields in RTL */
+.rtl input,
+.rtl textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Buttons maintain center alignment */
+.rtl button {
+  text-align: center;
+}
+
+/* Tables in RTL */
+.rtl table {
+  direction: rtl;
+}
+
+.rtl th,
+.rtl td {
+  text-align: right;
+}

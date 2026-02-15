@@ -1,0 +1,64 @@
+{
+  "game": {
+    "title": "המשקיע הצעיר",
+    "subtitle": "משחק ללימוד השקעות",
+    "loading": "טוען...",
+    "start": "התחל משחק",
+    "continue": "המשך משחק",
+    "settings": "הגדרות",
+    "language": "שפה"
+  },
+  "hud": {
+    "cash": "מזומן",
+    "assets": "נכסים",
+    "total": "סה\"כ",
+    "turn": "תור",
+    "destination": "יעד"
+  },
+  "trade": {
+    "buy": "קנה",
+    "sell": "מכור",
+    "shares": "מניות",
+    "price": "מחיר",
+    "total": "סה\"כ",
+    "execute": "בצע",
+    "cancel": "ביטול",
+    "insufficientFunds": "אין מספיק כסף",
+    "insufficientShares": "אין מספיק מניות",
+    "stockChart": "גרף מניה"
+  },
+  "stocks": {
+    "solar": "סולאר",
+    "koogle": "קוגל",
+    "sesla": "ססלה",
+    "lemon": "לימון"
+  },
+  "scenes": {
+    "street": "רחוב",
+    "home": "בית",
+    "livingRoom": "סלון",
+    "bedroom": "חדר שינה",
+    "bank": "בנק",
+    "school": "בית ספר",
+    "library": "ספרייה",
+    "hotel": "מלון",
+    "computerShop": "חנות מחשבים",
+    "barMitzvah": "בר מצווה"
+  },
+  "dialogue": {
+    "next": "הבא",
+    "skip": "דלג",
+    "close": "סגור"
+  },
+  "menu": {
+    "newGame": "משחק חדש",
+    "continueGame": "המשך",
+    "enterName": "הכנס את שמך:",
+    "namePlaceholder": "שם פרטי"
+  },
+  "instructions": {
+    "movement": "השתמש בחיצים או בג'ויסטיק כדי לזוז",
+    "interact": "לחץ רווח או לחץ על דמות כדי לדבר",
+    "enterBuilding": "עמוד ליד דלת ולחץ למעלה כדי להיכנס"
+  }
+}

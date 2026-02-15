@@ -1,0 +1,64 @@
+{
+  "game": {
+    "title": "The Young Investor",
+    "subtitle": "An Investment Learning Game",
+    "loading": "Loading...",
+    "start": "Start Game",
+    "continue": "Continue Game",
+    "settings": "Settings",
+    "language": "Language"
+  },
+  "hud": {
+    "cash": "Cash",
+    "assets": "Assets",
+    "total": "Total",
+    "turn": "Turn",
+    "destination": "Goal"
+  },
+  "trade": {
+    "buy": "Buy",
+    "sell": "Sell",
+    "shares": "Shares",
+    "price": "Price",
+    "total": "Total",
+    "execute": "Execute",
+    "cancel": "Cancel",
+    "insufficientFunds": "Insufficient funds",
+    "insufficientShares": "Not enough shares",
+    "stockChart": "Stock Chart"
+  },
+  "stocks": {
+    "solar": "Solar",
+    "koogle": "Koogle",
+    "sesla": "Sesla",
+    "lemon": "Lemon"
+  },
+  "scenes": {
+    "street": "Street",
+    "home": "Home",
+    "livingRoom": "Living Room",
+    "bedroom": "Bedroom",
+    "bank": "Bank",
+    "school": "School",
+    "library": "Library",
+    "hotel": "Hotel",
+    "computerShop": "Computer Shop",
+    "barMitzvah": "Bar Mitzvah"
+  },
+  "dialogue": {
+    "next": "Next",
+    "skip": "Skip",
+    "close": "Close"
+  },
+  "menu": {
+    "newGame": "New Game",
+    "continueGame": "Continue",
+    "enterName": "Enter your name:",
+    "namePlaceholder": "First name"
+  },
+  "instructions": {
+    "movement": "Use arrow keys or joystick to move",
+    "interact": "Press Space or tap a character to talk",
+    "enterBuilding": "Stand near a door and press Up to enter"
+  }
+}
