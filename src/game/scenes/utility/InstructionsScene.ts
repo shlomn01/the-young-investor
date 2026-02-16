@@ -73,8 +73,17 @@ export class InstructionsScene extends BaseScene {
 
     const npcData = INSTRUCTION_NPCS[this.gameId] || INSTRUCTION_NPCS.tradingSim;
 
-    // Background
-    this.drawGradientBg(0x2c3e50, 0x1a252f);
+    // Sky background for outdoor feel
+    this.drawSkyBackground('day');
+
+    const g = this.add.graphics();
+
+    // Decorative background trees
+    this.drawTree(g, 50, this.h - 60, 1.2);
+    this.drawTree(g, 1800, this.h - 60, 1.0);
+    this.drawTree(g, 1650, this.h - 60, 0.7);
+    this.drawBush(g, 150, this.h - 60, 1.0);
+    this.drawBush(g, 1750, this.h - 60, 0.8);
 
     // Title
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'הוראות - דבר עם כל הדמויות!' : 'Instructions - Talk to all characters!', {
@@ -83,14 +92,39 @@ export class InstructionsScene extends BaseScene {
 
     // Create platforms
     this.platforms = this.physics.add.staticGroup();
-    const g = this.add.graphics();
 
     for (const npc of npcData) {
-      // Platform
-      g.fillStyle(0x556b2f, 1);
-      g.fillRect(npc.x - 100, npc.platformY, 200, 20);
+      const platW = 220;
+      const platH = 24;
+      const px = npc.x - platW / 2;
+      const py = npc.platformY;
 
-      const platform = this.add.zone(npc.x, npc.platformY + 10, 200, 20);
+      // Stone edge base
+      g.fillStyle(0x6b6b7a, 1);
+      g.fillRoundedRect(px - 4, py + 2, platW + 8, platH, 6);
+      // Stone top
+      g.fillStyle(0x8a8a9a, 1);
+      g.fillRoundedRect(px, py, platW, platH - 4, 4);
+      // Stone texture lines
+      g.fillStyle(0x555566, 0.3);
+      for (let sx = px + 15; sx < px + platW - 10; sx += 25) {
+        g.fillRect(sx, py + 4, 1, platH - 10);
+      }
+      // Grass on top
+      g.fillStyle(0x3d8b37, 1);
+      g.fillRect(px, py - 5, platW, 8);
+      g.fillStyle(0x4caf50, 1);
+      for (let gx = px; gx < px + platW; gx += 6) {
+        const bladeH = 3 + Math.random() * 6;
+        g.fillRect(gx, py - 5 - bladeH, 2, bladeH);
+      }
+
+      // Small bushes on some platforms
+      if (Math.random() > 0.5) {
+        this.drawBush(g, npc.x + platW / 2 - 20, py - 5, 0.4);
+      }
+
+      const platform = this.add.zone(npc.x, py + 10, platW, 20);
       this.physics.add.existing(platform, true);
       this.platforms.add(platform);
 
@@ -107,9 +141,36 @@ export class InstructionsScene extends BaseScene {
       this.npcs.push({ sprite: npcSprite, data: npc });
     }
 
-    // Ground
-    g.fillStyle(0x4a4a4a, 1);
+    // Ground with grass detail
+    // Dirt/stone base
+    g.fillStyle(0x5a5a4a, 1);
     g.fillRect(0, this.h - 60, this.w, 60);
+    // Stone texture
+    g.fillStyle(0x4a4a3a, 0.3);
+    for (let row = 0; row < 3; row++) {
+      const ry = this.h - 60 + row * 20;
+      g.fillRect(0, ry, this.w, 1);
+      const offset = row % 2 === 0 ? 0 : 50;
+      for (let col = offset; col < this.w; col += 100) {
+        g.fillRect(col, ry, 1, 20);
+      }
+    }
+    // Grass layer on top of ground
+    g.fillStyle(0x3d8b37, 1);
+    g.fillRect(0, this.h - 68, this.w, 12);
+    // Individual grass blades
+    g.fillStyle(0x4caf50, 1);
+    for (let gx = 0; gx < this.w; gx += 7) {
+      const bladeH = 4 + Math.random() * 8;
+      g.fillRect(gx, this.h - 68 - bladeH, 2, bladeH);
+    }
+    // Some darker grass
+    g.fillStyle(0x2d7a27, 0.6);
+    for (let gx = 3; gx < this.w; gx += 14) {
+      const bladeH = 3 + Math.random() * 5;
+      g.fillRect(gx, this.h - 68 - bladeH, 2, bladeH);
+    }
+
     const ground = this.add.zone(this.w / 2, this.h - 30, this.w, 60);
     this.physics.add.existing(ground, true);
     this.platforms.add(ground);

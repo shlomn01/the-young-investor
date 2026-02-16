@@ -44,29 +44,111 @@ export class PercentsGame extends BaseScene {
     this.score = 0;
     this.questions = this.lang === 'he' ? QUESTIONS.he : QUESTIONS.en;
 
-    // Platformer-style background
-    this.drawGradientBg(0x1a1a3e, 0x0a0a2e);
+    // Rich gradient background (dark blue to purple)
+    this.drawGradientBg(0x0d0b3e, 0x2a0845);
 
-    // Ground platform
     const g = this.add.graphics();
-    g.fillStyle(0x4a4a4a, 1);
+
+    // Starfield particles in the background
+    for (let i = 0; i < 60; i++) {
+      const sx = Math.random() * this.w;
+      const sy = Math.random() * this.h * 0.6;
+      const brightness = 0.2 + Math.random() * 0.6;
+      g.fillStyle(0xffffff, brightness);
+      g.fillCircle(sx, sy, 0.5 + Math.random() * 1.5);
+    }
+
+    // Ground platform with grass texture on top
+    // Stone body
+    g.fillStyle(0x4a4a5a, 1);
     g.fillRect(0, this.h - 100, this.w, 100);
+    // Stone texture lines
+    g.fillStyle(0x3a3a4a, 1);
+    for (let row = 0; row < 5; row++) {
+      const ry = this.h - 100 + row * 20;
+      g.fillRect(0, ry, this.w, 1);
+      const offset = row % 2 === 0 ? 0 : 60;
+      for (let col = offset; col < this.w; col += 120) {
+        g.fillRect(col, ry, 1, 20);
+      }
+    }
+    // Grass on top of ground
+    g.fillStyle(0x3d8b37, 1);
+    g.fillRect(0, this.h - 108, this.w, 12);
+    g.fillStyle(0x4caf50, 1);
+    for (let gx = 0; gx < this.w; gx += 8) {
+      const bladeH = 4 + Math.random() * 8;
+      g.fillRect(gx, this.h - 108 - bladeH, 3, bladeH);
+    }
 
-    // Platform for player
-    g.fillStyle(0x666666, 1);
-    g.fillRoundedRect(this.w / 2 - 150, this.h - 250, 300, 20, 4);
+    // Elevated platform with stone texture and grass
+    const platX = this.w / 2 - 160;
+    const platY = this.h - 250;
+    const platW = 320;
+    const platH = 24;
+    // Stone base
+    g.fillStyle(0x6b6b7a, 1);
+    g.fillRoundedRect(platX, platY, platW, platH, 4);
+    // Stone highlight
+    g.fillStyle(0x8a8a9a, 0.5);
+    g.fillRect(platX + 4, platY + 2, platW - 8, 4);
+    // Stone texture
+    g.fillStyle(0x555566, 0.4);
+    for (let sx = platX + 10; sx < platX + platW - 10; sx += 30) {
+      g.fillRect(sx, platY + 6, 1, platH - 8);
+    }
+    // Grass on platform
+    g.fillStyle(0x3d8b37, 1);
+    g.fillRect(platX, platY - 5, platW, 7);
+    g.fillStyle(0x4caf50, 1);
+    for (let gx = platX; gx < platX + platW; gx += 6) {
+      const bladeH = 3 + Math.random() * 6;
+      g.fillRect(gx, platY - 5 - bladeH, 2, bladeH);
+    }
 
-    // Title
+    // Title with glow effect
+    const titleGlow = this.add.text(this.w / 2, 30, this.lang === 'he' ? 'משחק האחוזים!' : 'The Percentage Game!', {
+      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+    }).setOrigin(0.5).setAlpha(0.3).setScale(1.05);
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'משחק האחוזים!' : 'The Percentage Game!', {
       fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
     }).setOrigin(0.5);
+    // Pulse the glow
+    this.tweens.add({
+      targets: titleGlow,
+      alpha: 0.1,
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+    });
 
-    // Score
-    this.scoreText = this.add.text(this.w - 50, 30, `${this.score}/${this.questions.length}`, {
+    // Better score display with panel
+    const scorePanel = this.add.graphics();
+    scorePanel.fillStyle(0x000000, 0.4);
+    scorePanel.fillRoundedRect(this.w - 180, 12, 160, 44, 10);
+    scorePanel.lineStyle(2, 0x50c878, 0.6);
+    scorePanel.strokeRoundedRect(this.w - 180, 12, 160, 44, 10);
+
+    this.add.text(this.w - 165, 22, this.lang === 'he' ? 'ניקוד:' : 'Score:', {
+      fontSize: '16px', color: '#aaaaaa', fontFamily: 'Arial',
+    });
+    this.scoreText = this.add.text(this.w - 40, 34, `${this.score}/${this.questions.length}`, {
       fontSize: '28px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
-    }).setOrigin(1, 0);
+    }).setOrigin(1, 0.5);
 
-    // Question text
+    // Progress dots
+    for (let i = 0; i < this.questions.length; i++) {
+      const dotColor = i < this.score ? 0x50c878 : (i === this.currentQuestion ? 0xffd700 : 0x444466);
+      const dotX = this.w / 2 - (this.questions.length * 20) / 2 + i * 20 + 10;
+      g.fillStyle(dotColor, 1);
+      g.fillCircle(dotX, 75, 5);
+    }
+
+    // Question text with panel background
+    const qPanel = this.add.graphics();
+    qPanel.fillStyle(0x000000, 0.35);
+    qPanel.fillRoundedRect(this.w / 2 - 500, 90, 1000, 60, 12);
+
     this.questionText = this.add.text(this.w / 2, 120, '', {
       fontSize: '28px', color: '#ffffff', fontFamily: 'Arial',
       wordWrap: { width: 1400 },
@@ -103,15 +185,39 @@ export class PercentsGame extends BaseScene {
 
   private createAnswerOrb(x: number, y: number, text: string, isCorrect: boolean): Phaser.GameObjects.Container {
     const container = this.add.container(x, y);
+    const orbColor = isCorrect ? 0x50c878 : 0xe74c3c;
 
-    const circle = this.add.circle(0, 0, 50, isCorrect ? 0x50c878 : 0xe74c3c, 0.8);
+    // Outer glow ring
+    const outerGlow = this.add.circle(0, 0, 65, orbColor, 0.15);
+    container.add(outerGlow);
+
+    // Inner glow ring
+    const innerGlow = this.add.circle(0, 0, 58, orbColor, 0.25);
+    container.add(innerGlow);
+
+    // Main orb
+    const circle = this.add.circle(0, 0, 50, orbColor, 0.85);
     circle.setInteractive({ useHandCursor: true });
     container.add(circle);
+
+    // Highlight on orb (specular)
+    const highlight = this.add.circle(-12, -15, 14, 0xffffff, 0.25);
+    container.add(highlight);
 
     const label = this.add.text(0, 0, text, {
       fontSize: '20px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
     }).setOrigin(0.5);
     container.add(label);
+
+    // Pulse the glow rings
+    this.tweens.add({
+      targets: [outerGlow, innerGlow],
+      alpha: 0.05,
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
 
     // Bounce animation
     this.tweens.add({
@@ -184,25 +290,46 @@ export class PercentsGame extends BaseScene {
     this.store.completeMiniGame('percents');
 
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.8);
+    g.fillStyle(0x000000, 0.85);
     g.fillRect(0, 0, this.w, this.h);
 
+    // Results panel
+    const panelW = 500;
+    const panelH = 320;
+    const panelX = this.w / 2 - panelW / 2;
+    const panelY = this.h / 2 - panelH / 2 - 20;
+    g.fillStyle(0x16133e, 0.95);
+    g.fillRoundedRect(panelX, panelY, panelW, panelH, 20);
+    g.lineStyle(3, 0xffd700, 0.7);
+    g.strokeRoundedRect(panelX, panelY, panelW, panelH, 20);
+
     const resultTitle = this.lang === 'he' ? 'תוצאות' : 'Results';
-    this.add.text(this.w / 2, this.h / 2 - 100, resultTitle, {
+    this.add.text(this.w / 2, panelY + 40, resultTitle, {
       fontSize: '48px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    this.add.text(this.w / 2, this.h / 2, `${this.score} / ${this.questions.length}`, {
+    this.add.text(this.w / 2, panelY + 120, `${this.score} / ${this.questions.length}`, {
       fontSize: '64px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     const rating = this.score >= 5 ? '⭐⭐⭐' : this.score >= 3 ? '⭐⭐' : '⭐';
-    this.add.text(this.w / 2, this.h / 2 + 60, rating, {
+    this.add.text(this.w / 2, panelY + 190, rating, {
       fontSize: '48px',
     }).setOrigin(0.5);
 
+    // Progress bar in results
+    const barW = panelW - 80;
+    const barX = panelX + 40;
+    const barY = panelY + 240;
+    g.fillStyle(0x333355, 1);
+    g.fillRoundedRect(barX, barY, barW, 16, 8);
+    const fillW = (this.score / this.questions.length) * barW;
+    const barColor = this.score >= 5 ? 0x50c878 : this.score >= 3 ? 0xffd700 : 0xe74c3c;
+    g.fillStyle(barColor, 1);
+    g.fillRoundedRect(barX, barY, fillW, 16, 8);
+
     this.createButton(
-      this.w / 2, this.h / 2 + 160,
+      this.w / 2, panelY + panelH + 40,
       this.lang === 'he' ? 'המשך' : 'Continue',
       () => this.goToScene('Street', { streetIndex: 6 }),
       200, 50

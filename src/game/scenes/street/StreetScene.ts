@@ -145,47 +145,31 @@ export class StreetScene extends BaseScene {
     this.nearEntrance = false;
     this.currentEntrance = null;
 
-    // Background
-    this.drawGradientBg(this.config.bgTopColor, this.config.bgBottomColor);
+    // --- Sky background with sun and clouds ---
+    this.drawSkyBackground('day');
 
-    // Ground
-    const ground = this.add.graphics();
-    ground.fillStyle(0x808080, 1);
-    ground.fillRect(0, this.h - 200, this.w, 200);
-    // Sidewalk
-    ground.fillStyle(0xd3d3d3, 1);
-    ground.fillRect(0, this.h - 200, this.w, 20);
+    // --- Ground layers ---
+    const groundY = this.h - 200;
+    this.drawGround(groundY);
 
-    // Road markings
-    ground.fillStyle(0xffff00, 1);
-    for (let x = 0; x < this.w; x += 100) {
-      ground.fillRect(x, this.h - 100, 50, 4);
-    }
+    // --- Environmental details (trees, bushes, lamp posts) ---
+    this.drawEnvironment(groundY);
 
-    // Street label
-    const streetLabel = this.lang === 'he'
-      ? `רחוב ${this.streetIndex}`
-      : `Street ${this.streetIndex}`;
-    this.add.text(this.w / 2, 40, streetLabel, {
-      fontSize: '28px',
-      color: '#ffffff',
-      fontFamily: 'Arial',
-      stroke: '#000000',
-      strokeThickness: 3,
-    }).setOrigin(0.5);
+    // --- Street label with styled background panel ---
+    this.drawStreetLabel();
 
-    // Buildings
+    // --- Buildings ---
     for (const building of this.config.buildings) {
       const bWidth = 200;
       const bHeight = 250;
       const bx = building.x - bWidth / 2;
-      const by = this.h - 200 - bHeight;
+      const by = groundY - bHeight;
       const label = this.lang === 'he' ? building.labelHe : building.label;
 
       this.drawBuilding(bx, by, bWidth, bHeight, building.color, label);
 
       // Arrow indicator above building
-      const arrow = this.add.text(building.x, by - 30, '▼', {
+      const arrow = this.add.text(building.x, by - 30, '\u25BC', {
         fontSize: '32px',
         color: '#ffd700',
       }).setOrigin(0.5);
@@ -210,7 +194,7 @@ export class StreetScene extends BaseScene {
 
     // Exit arrows
     if (this.config.exitLeft) {
-      const leftArrow = this.add.text(40, this.h / 2, '◀', {
+      const leftArrow = this.add.text(40, this.h / 2, '\u25C0', {
         fontSize: '48px',
         color: '#ffffff',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -228,7 +212,7 @@ export class StreetScene extends BaseScene {
       });
     }
     if (this.config.exitRight) {
-      const rightArrow = this.add.text(this.w - 40, this.h / 2, '▶', {
+      const rightArrow = this.add.text(this.w - 40, this.h / 2, '\u25B6', {
         fontSize: '48px',
         color: '#ffffff',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -271,6 +255,175 @@ export class StreetScene extends BaseScene {
     this.fadeIn();
   }
 
+  private drawGround(groundY: number) {
+    const g = this.add.graphics();
+
+    // --- Green grass area ---
+    g.fillStyle(0x4caf50, 1);
+    g.fillRect(0, groundY, this.w, 200);
+
+    // Subtle grass texture - lighter grass stripes
+    g.fillStyle(0x66bb6a, 0.3);
+    for (let x = 0; x < this.w; x += 40) {
+      const h = 4 + Math.sin(x * 0.05) * 2;
+      g.fillRect(x, groundY, 20, h);
+    }
+
+    // Small grass tufts along the top edge
+    g.fillStyle(0x388e3c, 0.6);
+    for (let x = 10; x < this.w; x += 30 + Math.sin(x) * 10) {
+      g.fillTriangle(
+        x - 4, groundY,
+        x, groundY - 6 - Math.sin(x * 0.1) * 3,
+        x + 4, groundY,
+      );
+    }
+
+    // --- Sidewalk with brick pattern ---
+    const sidewalkY = groundY + 10;
+    const sidewalkH = 40;
+
+    // Sidewalk base
+    g.fillStyle(0xbdbdbd, 1);
+    g.fillRect(0, sidewalkY, this.w, sidewalkH);
+
+    // Sidewalk top edge (curb)
+    g.fillStyle(0xd0d0d0, 1);
+    g.fillRect(0, sidewalkY, this.w, 6);
+
+    // Brick pattern on sidewalk
+    const brickW = 30;
+    const brickH = 14;
+    const brickGap = 2;
+    for (let row = 0; row < Math.ceil(sidewalkH / (brickH + brickGap)); row++) {
+      const by = sidewalkY + 6 + row * (brickH + brickGap);
+      const offset = row % 2 === 0 ? 0 : brickW / 2;
+      for (let bx = -brickW + offset; bx < this.w; bx += brickW + brickGap) {
+        // Alternate brick shading for texture
+        const shade = (row + Math.floor(bx / brickW)) % 3 === 0 ? 0xa0a0a0 : 0xb0b0b0;
+        g.fillStyle(shade, 0.3);
+        g.fillRect(bx, by, brickW, brickH);
+      }
+    }
+
+    // Sidewalk bottom edge
+    g.fillStyle(0x999999, 1);
+    g.fillRect(0, sidewalkY + sidewalkH - 3, this.w, 3);
+
+    // --- Dark asphalt road ---
+    const roadY = sidewalkY + sidewalkH;
+    const roadH = this.h - roadY;
+
+    // Road base
+    g.fillStyle(0x3a3a3a, 1);
+    g.fillRect(0, roadY, this.w, roadH);
+
+    // Subtle asphalt texture
+    g.fillStyle(0x444444, 0.3);
+    for (let i = 0; i < 200; i++) {
+      const rx = Math.random() * this.w;
+      const ry = roadY + Math.random() * roadH;
+      g.fillRect(rx, ry, 2 + Math.random() * 3, 1);
+    }
+
+    // Yellow edge line (top of road, along curb)
+    g.fillStyle(0xffc107, 1);
+    g.fillRect(0, roadY, this.w, 4);
+
+    // Yellow edge line (bottom of road)
+    g.fillStyle(0xffc107, 1);
+    g.fillRect(0, this.h - 4, this.w, 4);
+
+    // White dashed center lane markings
+    const centerY = roadY + roadH / 2 - 2;
+    g.fillStyle(0xffffff, 0.9);
+    for (let x = 20; x < this.w; x += 80) {
+      g.fillRect(x, centerY, 40, 4);
+    }
+  }
+
+  private drawEnvironment(groundY: number) {
+    const g = this.add.graphics();
+
+    // Determine occupied x-ranges by buildings (with some padding)
+    const buildingZones = this.config.buildings.map(b => ({
+      left: b.x - 130,
+      right: b.x + 130,
+    }));
+
+    const isOccupied = (x: number, padding = 0): boolean => {
+      return buildingZones.some(z => x >= z.left - padding && x <= z.right + padding);
+    };
+
+    // --- Trees ---
+    // Place trees in gaps between buildings and near edges
+    const treePositions: Array<{ x: number; scale: number }> = [];
+
+    // Try placing trees at regular intervals, skipping building zones
+    const treeSpacing = 240;
+    for (let tx = 120; tx < this.w - 100; tx += treeSpacing) {
+      if (!isOccupied(tx, 40)) {
+        const scale = 0.8 + Math.sin(tx * 0.01) * 0.3;
+        treePositions.push({ x: tx, scale });
+      }
+    }
+
+    // Draw trees on the grass, above the sidewalk
+    for (const tree of treePositions) {
+      this.drawTree(g, tree.x, groundY + 8, tree.scale);
+    }
+
+    // --- Bushes along the sidewalk ---
+    const bushSpacing = 150;
+    for (let bx = 80; bx < this.w - 60; bx += bushSpacing + Math.sin(bx * 0.03) * 30) {
+      if (!isOccupied(bx, 20)) {
+        const scale = 0.6 + Math.sin(bx * 0.02) * 0.2;
+        this.drawBush(g, bx, groundY + 14, scale);
+      }
+    }
+
+    // --- Lamp posts ---
+    // Place lamp posts at wider intervals, avoiding buildings
+    const lampSpacing = 350;
+    for (let lx = 200; lx < this.w - 100; lx += lampSpacing) {
+      if (!isOccupied(lx, 60)) {
+        this.drawLampPost(g, lx, groundY + 10);
+      }
+    }
+  }
+
+  private drawStreetLabel() {
+    const streetLabel = this.lang === 'he'
+      ? `\u05E8\u05D7\u05D5\u05D1 ${this.streetIndex}`
+      : `Street ${this.streetIndex}`;
+
+    // Background panel
+    const panelWidth = streetLabel.length * 16 + 60;
+    const panelX = this.w / 2 - panelWidth / 2;
+    const panelY = 18;
+    const panelH = 44;
+
+    const labelBg = this.add.graphics();
+    // Dark semi-transparent panel
+    labelBg.fillStyle(0x1a1a2e, 0.8);
+    labelBg.fillRoundedRect(panelX, panelY, panelWidth, panelH, 12);
+    // Gold border
+    labelBg.lineStyle(2, 0xffd700, 0.9);
+    labelBg.strokeRoundedRect(panelX, panelY, panelWidth, panelH, 12);
+    // Inner highlight line at top
+    labelBg.lineStyle(1, 0xffffff, 0.15);
+    labelBg.strokeRoundedRect(panelX + 2, panelY + 2, panelWidth - 4, panelH - 4, 10);
+
+    this.add.text(this.w / 2, panelY + panelH / 2, streetLabel, {
+      fontSize: '26px',
+      color: '#ffffff',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5);
+  }
+
   update() {
     if (!this.cursors || !this.playerBody) return;
 
@@ -298,7 +451,7 @@ export class StreetScene extends BaseScene {
 
     // Show/hide prompt
     if (this.nearEntrance && this.currentEntrance) {
-      const promptLabel = this.lang === 'he' ? 'לחץ ↑ להיכנס' : 'Press ↑ to enter';
+      const promptLabel = this.lang === 'he' ? '\u05DC\u05D7\u05E5 \u2191 \u05DC\u05D4\u05D9\u05DB\u05E0\u05E1' : 'Press \u2191 to enter';
       this.promptText.setText(promptLabel);
       this.promptText.setPosition(this.player.x, this.player.y - 80);
       this.promptText.setVisible(true);

@@ -73,18 +73,100 @@ export class SchoolScene extends BaseScene {
     const lesson = LESSONS[this.lessonId] || LESSONS[1];
     this.pages = this.lang === 'he' ? lesson.he : lesson.en;
 
-    // Classroom background
-    const g = this.add.graphics();
-    g.fillStyle(0xfffff0, 1);
-    g.fillRect(0, 0, this.w, this.h);
-    g.fillStyle(0x8b7355, 1);
-    g.fillRect(0, this.h - 100, this.w, 100);
+    // Interior room with warm white walls and classroom floor
+    this.drawInteriorRoom(0xfff8e7, 0xc9b896, { floorHeight: 150, ceiling: true });
 
-    // Blackboard
-    g.fillStyle(0x2f4f2f, 1);
-    g.fillRoundedRect(300, 80, this.w - 600, 500, 16);
-    g.lineStyle(6, 0x8b4513);
-    g.strokeRoundedRect(300, 80, this.w - 600, 500, 16);
+    const dg = this.add.graphics();
+
+    // --- Detailed chalkboard with wood frame ---
+    const bbX = 350;
+    const bbY = 80;
+    const bbW = this.w - 700;
+    const bbH = 450;
+    // Outer wood frame
+    dg.fillStyle(0x6b3a2a, 1);
+    dg.fillRoundedRect(bbX - 16, bbY - 16, bbW + 32, bbH + 32, 8);
+    // Inner frame bevel
+    dg.fillStyle(0x8b5a3a, 1);
+    dg.fillRoundedRect(bbX - 8, bbY - 8, bbW + 16, bbH + 16, 4);
+    // Chalkboard surface
+    dg.fillStyle(0x2f4f2f, 1);
+    dg.fillRect(bbX, bbY, bbW, bbH);
+    // Subtle chalk dust marks for realism
+    dg.fillStyle(0xffffff, 0.03);
+    dg.fillRect(bbX + 20, bbY + 50, 200, 2);
+    dg.fillRect(bbX + 100, bbY + 120, 150, 1);
+    dg.fillRect(bbX + 50, bbY + 200, 250, 1);
+    // Chalk tray at bottom
+    dg.fillStyle(0x7a4432, 1);
+    dg.fillRect(bbX, bbY + bbH, bbW, 16);
+    dg.fillStyle(0x6b3a2a, 1);
+    dg.fillRect(bbX, bbY + bbH + 12, bbW, 8);
+    // Chalk pieces on tray
+    dg.fillStyle(0xffffff, 0.9);
+    dg.fillRoundedRect(bbX + 40, bbY + bbH + 2, 30, 8, 3);
+    dg.fillStyle(0xffff00, 0.8);
+    dg.fillRoundedRect(bbX + 90, bbY + bbH + 3, 25, 7, 3);
+    dg.fillStyle(0xff6666, 0.8);
+    dg.fillRoundedRect(bbX + 140, bbY + bbH + 2, 28, 8, 3);
+
+    // --- Teacher's desk (in front, left side) ---
+    // Desk top
+    dg.fillStyle(0xb8860b, 1);
+    dg.fillRoundedRect(80, this.h - 350, 250, 22, 4);
+    // Desk front panel
+    dg.fillStyle(0xa07608, 1);
+    dg.fillRect(85, this.h - 328, 240, 120);
+    // Desk side panel
+    dg.fillStyle(0x8b6508, 1);
+    dg.fillRect(80, this.h - 328, 8, 150);
+    dg.fillRect(322, this.h - 328, 8, 150);
+    // Drawer
+    dg.fillStyle(0x9a7010, 1);
+    dg.fillRoundedRect(120, this.h - 310, 160, 45, 4);
+    dg.fillStyle(0xffd700, 1);
+    dg.fillCircle(200, this.h - 288, 3);
+    // Apple on desk
+    dg.fillStyle(0xe74c3c, 1);
+    dg.fillCircle(140, this.h - 370, 14);
+    dg.fillStyle(0x27ae60, 1);
+    dg.fillRect(138, this.h - 388, 4, 8);
+    // Stack of papers
+    dg.fillStyle(0xffffff, 0.9);
+    dg.fillRect(240, this.h - 372, 60, 4);
+    dg.fillRect(242, this.h - 376, 58, 4);
+    dg.fillRect(244, this.h - 380, 56, 4);
+
+    // --- Student desks in rows ---
+    const deskColor = 0xcd853f;
+    const deskLegColor = 0xaaa080;
+    // Row 1 (3 desks)
+    for (let i = 0; i < 3; i++) {
+      const dx = 500 + i * 350;
+      const dy = this.h - 200;
+      // Desk top
+      dg.fillStyle(deskColor, 1);
+      dg.fillRoundedRect(dx, dy, 140, 14, 3);
+      // Legs
+      dg.fillStyle(deskLegColor, 1);
+      dg.fillRect(dx + 5, dy + 14, 6, 40);
+      dg.fillRect(dx + 129, dy + 14, 6, 40);
+      // Chair behind desk
+      dg.fillStyle(0x4a90d9, 0.7);
+      dg.fillRoundedRect(dx + 30, dy - 40, 80, 10, 3);
+      dg.fillStyle(0x4a90d9, 0.5);
+      dg.fillRect(dx + 35, dy - 70, 70, 30);
+    }
+    // Row 2 (3 desks, slightly higher / further back)
+    for (let i = 0; i < 3; i++) {
+      const dx = 500 + i * 350;
+      const dy = this.h - 300;
+      dg.fillStyle(deskColor, 0.85);
+      dg.fillRoundedRect(dx, dy, 120, 12, 3);
+      dg.fillStyle(deskLegColor, 0.7);
+      dg.fillRect(dx + 5, dy + 12, 5, 30);
+      dg.fillRect(dx + 110, dy + 12, 5, 30);
+    }
 
     // Teacher
     const teacherName = this.lang === 'he' ? 'המורה' : 'Teacher';

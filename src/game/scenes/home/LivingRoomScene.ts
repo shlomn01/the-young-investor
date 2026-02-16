@@ -15,41 +15,90 @@ export class LivingRoomScene extends BaseScene {
   create() {
     super.create();
 
-    // Living room background
-    this.drawGradientBg(0xf5deb3, 0xdeb887);
+    // Interior room with antique white walls and wood floor
+    this.drawInteriorRoom(0xfaebd7, 0x8b6b4a, { woodFloor: true, baseboard: true, ceiling: true });
 
-    // Floor
-    const g = this.add.graphics();
-    g.fillStyle(0x8b4513, 1);
-    g.fillRect(0, this.h - 150, this.w, 150);
+    const dg = this.add.graphics();
 
-    // Walls
-    g.fillStyle(0xfaebd7, 1);
-    g.fillRect(0, 0, this.w, this.h - 150);
+    // --- Window on the right wall ---
+    this.drawWindow(dg, 900, 80, 250, 180);
 
-    // Window
-    g.fillStyle(0x87ceeb, 0.6);
-    g.fillRect(800, 100, 300, 200);
-    g.lineStyle(4, 0x8b4513);
-    g.strokeRect(800, 100, 300, 200);
-    g.moveTo(950, 100);
-    g.lineTo(950, 300);
-    g.moveTo(800, 200);
-    g.lineTo(1100, 200);
-    g.stroke();
+    // --- Picture frames on wall ---
+    this.drawPictureFrame(dg, 150, 100, 80, 60, 0x7ec8e3); // family photo - blue sky scene
+    this.drawPictureFrame(dg, 280, 110, 60, 50, 0xd4a574); // sepia photo
+    this.drawPictureFrame(dg, 1300, 90, 70, 55, 0x90c695); // landscape - green
 
-    // Sofa
-    g.fillStyle(0x4169e1, 1);
-    g.fillRoundedRect(200, this.h - 350, 400, 150, 16);
-    g.fillStyle(0x3155b0, 1);
-    g.fillRoundedRect(200, this.h - 380, 400, 40, 8);
+    // --- Sofa with cushions and armrests ---
+    // Shadow
+    dg.fillStyle(0x000000, 0.1);
+    dg.fillRoundedRect(208, this.h - 342, 400, 150, 16);
+    // Sofa base/seat
+    dg.fillStyle(0x4169e1, 1);
+    dg.fillRoundedRect(200, this.h - 350, 400, 150, 16);
+    // Back rest
+    dg.fillStyle(0x3a5fc8, 1);
+    dg.fillRoundedRect(200, this.h - 400, 400, 60, { tl: 14, tr: 14, bl: 0, br: 0 });
+    // Left armrest
+    dg.fillStyle(0x3358b5, 1);
+    dg.fillRoundedRect(185, this.h - 400, 40, 200, { tl: 12, tr: 0, bl: 12, br: 0 });
+    // Right armrest
+    dg.fillStyle(0x3358b5, 1);
+    dg.fillRoundedRect(575, this.h - 400, 40, 200, { tl: 0, tr: 12, bl: 0, br: 12 });
+    // Seat cushions (3 cushions)
+    dg.fillStyle(0x4a78e0, 1);
+    dg.fillRoundedRect(230, this.h - 310, 110, 80, 10);
+    dg.fillRoundedRect(348, this.h - 310, 110, 80, 10);
+    dg.fillRoundedRect(466, this.h - 310, 110, 80, 10);
+    // Cushion divider lines
+    dg.fillStyle(0x3a5fc8, 0.5);
+    dg.fillRect(340, this.h - 310, 3, 80);
+    dg.fillRect(458, this.h - 310, 3, 80);
+    // Throw pillows on sofa
+    dg.fillStyle(0xff6347, 1);
+    dg.fillRoundedRect(240, this.h - 380, 50, 50, 12);
+    dg.fillStyle(0xffd700, 1);
+    dg.fillRoundedRect(510, this.h - 375, 45, 45, 12);
 
-    // Table
-    g.fillStyle(0xcd853f, 1);
-    g.fillRect(700, this.h - 280, 200, 130);
-    g.fillStyle(0xb8860b, 1);
-    g.fillRect(780, this.h - 150, 20, 40);
-    g.fillRect(880, this.h - 150, 20, 40);
+    // --- Coffee table with legs ---
+    // Table shadow
+    dg.fillStyle(0x000000, 0.08);
+    dg.fillRoundedRect(708, this.h - 268, 220, 18, 4);
+    // Table top
+    dg.fillStyle(0xcd853f, 1);
+    dg.fillRoundedRect(700, this.h - 275, 220, 18, 4);
+    // Table top highlight
+    dg.fillStyle(0xdaa06d, 1);
+    dg.fillRoundedRect(705, this.h - 275, 210, 6, 3);
+    // Legs (4 legs)
+    dg.fillStyle(0xb8860b, 1);
+    dg.fillRect(710, this.h - 257, 10, 80);
+    dg.fillRect(900, this.h - 257, 10, 80);
+    dg.fillRect(710, this.h - 257, 10, 80);
+    dg.fillRect(900, this.h - 257, 10, 80);
+    // Cross support bar
+    dg.fillStyle(0xb8860b, 0.6);
+    dg.fillRect(720, this.h - 210, 180, 5);
+
+    // --- TV / Entertainment Center ---
+    // TV stand
+    dg.fillStyle(0x5c4033, 1);
+    dg.fillRoundedRect(1350, this.h - 310, 250, 130, 6);
+    // Shelves in stand
+    dg.fillStyle(0x4a3328, 1);
+    dg.fillRect(1355, this.h - 245, 240, 3);
+    // TV screen (mounted on wall above stand)
+    dg.fillStyle(0x1a1a1a, 1);
+    dg.fillRoundedRect(1370, this.h - 520, 210, 150, 6);
+    // Screen content (blueish glow)
+    dg.fillStyle(0x2a4a6a, 1);
+    dg.fillRect(1378, this.h - 512, 194, 134);
+    // Screen reflection
+    dg.fillStyle(0xffffff, 0.08);
+    dg.fillRect(1378, this.h - 512, 194, 50);
+    // TV stand leg
+    dg.fillStyle(0x333333, 1);
+    dg.fillRect(1465, this.h - 370, 20, 60);
+    dg.fillRect(1450, this.h - 370, 50, 6);
 
     // Room label
     const label = this.lang === 'he' ? 'סלון' : 'Living Room';

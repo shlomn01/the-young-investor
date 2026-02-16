@@ -52,10 +52,22 @@ export class TradeScene extends BaseScene {
     }
     this.store.updateStockPrices(priceUpdate);
 
-    // Trading floor background
+    // Trading floor background - dark gradient
+    this.drawGradientBg(0x0e1a2e, 0x080e18);
+
     const g = this.add.graphics();
-    g.fillStyle(0x1a1a2e, 1);
-    g.fillRect(0, 0, this.w, this.h);
+
+    // Subtle grid background
+    g.lineStyle(1, 0xffffff, 0.015);
+    for (let x = 0; x < this.w; x += 50) {
+      g.moveTo(x, 0);
+      g.lineTo(x, this.h);
+    }
+    for (let y = 0; y < this.h; y += 50) {
+      g.moveTo(0, y);
+      g.lineTo(this.w, y);
+    }
+    g.strokePath();
 
     // Title
     const roundLabel = this.lang === 'he' ? `סבב מסחר ${this.round}` : `Trading Round ${this.round}`;
@@ -63,7 +75,10 @@ export class TradeScene extends BaseScene {
       fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    // Cash display
+    // Cash display with panel
+    const cashPanel = this.add.graphics();
+    cashPanel.fillStyle(0x000000, 0.3);
+    cashPanel.fillRoundedRect(30, 18, 300, 36, 8);
     this.add.text(50, 30, `${this.lang === 'he' ? 'מזומן:' : 'Cash:'} ${formatCurrency(this.store.cash, this.lang)}`, {
       fontSize: '24px', color: '#50c878', fontFamily: 'Arial',
     });
@@ -96,8 +111,14 @@ export class TradeScene extends BaseScene {
   }
 
   private drawStockList(g: Phaser.GameObjects.Graphics) {
-    g.fillStyle(0x16213e, 1);
+    // Panel shadow
+    g.fillStyle(0x000000, 0.2);
+    g.fillRoundedRect(36, 86, 350, this.stocks.length * 90 + 20, 12);
+    // Panel
+    g.fillStyle(0x12203e, 1);
     g.fillRoundedRect(30, 80, 350, this.stocks.length * 90 + 20, 12);
+    g.lineStyle(1, 0x2a4a6e, 0.5);
+    g.strokeRoundedRect(30, 80, 350, this.stocks.length * 90 + 20, 12);
 
     for (let i = 0; i < this.stocks.length; i++) {
       const stock = this.stocks[i];
@@ -111,6 +132,9 @@ export class TradeScene extends BaseScene {
       if (isSelected) {
         g.fillStyle(0x2a3a5e, 1);
         g.fillRoundedRect(40, sy - 5, 330, 80, 8);
+        // Selection indicator
+        g.fillStyle(0x4a90d9, 1);
+        g.fillRect(40, sy + 10, 4, 50);
       }
 
       const name = this.lang === 'he' ? stock.nameHe : stock.nameEn;
@@ -149,9 +173,15 @@ export class TradeScene extends BaseScene {
     const chartW = 800;
     const chartH = 450;
 
+    // Chart panel shadow
+    g.fillStyle(0x000000, 0.2);
+    g.fillRoundedRect(chartX + 4, chartY + 4, chartW, chartH, 12);
     // Chart background
-    g.fillStyle(0x0a0a1e, 1);
+    g.fillStyle(0x08101e, 1);
     g.fillRoundedRect(chartX, chartY, chartW, chartH, 12);
+    // Border
+    g.lineStyle(2, 0x1a3a5e, 0.6);
+    g.strokeRoundedRect(chartX, chartY, chartW, chartH, 12);
 
     // Chart title
     const name = this.lang === 'he' ? stock.nameHe : stock.nameEn;
@@ -171,7 +201,7 @@ export class TradeScene extends BaseScene {
     const drawH = chartH - padY * 2;
 
     // Grid lines
-    g.lineStyle(1, 0x333333, 0.5);
+    g.lineStyle(1, 0x1a2a3e, 0.5);
     for (let i = 0; i <= 4; i++) {
       const y = chartY + padY + (drawH / 4) * i;
       g.moveTo(chartX + padX, y);
@@ -184,34 +214,67 @@ export class TradeScene extends BaseScene {
       }).setOrigin(1, 0.5);
     }
 
-    // Price line
-    const isUp = prices[prices.length - 1] >= prices[0];
-    g.lineStyle(3, isUp ? 0x50c878 : 0xe74c3c, 1);
-    g.beginPath();
+    // Vertical grid lines
+    g.lineStyle(1, 0x1a2a3e, 0.3);
+    for (let i = 0; i < prices.length; i++) {
+      const x = chartX + padX + (drawW / (prices.length - 1)) * i;
+      g.moveTo(x, chartY + padY);
+      g.lineTo(x, chartY + padY + drawH);
+      g.stroke();
+    }
 
+    // Compute points
+    const points: { x: number; y: number }[] = [];
     for (let i = 0; i < prices.length; i++) {
       const x = chartX + padX + (drawW / (prices.length - 1)) * i;
       const y = chartY + padY + drawH - ((prices[i] - minPrice) / priceRange) * drawH;
+      points.push({ x, y });
+    }
 
-      if (i === 0) {
-        g.moveTo(x, y);
-      } else {
-        g.lineTo(x, y);
-      }
+    // Area fill under line
+    const isUp = prices[prices.length - 1] >= prices[0];
+    const fillColor = isUp ? 0x50c878 : 0xe74c3c;
+    g.fillStyle(fillColor, 0.08);
+    g.beginPath();
+    g.moveTo(points[0].x, chartY + padY + drawH);
+    for (const p of points) {
+      g.lineTo(p.x, p.y);
+    }
+    g.lineTo(points[points.length - 1].x, chartY + padY + drawH);
+    g.closePath();
+    g.fillPath();
+
+    // Price line
+    g.lineStyle(3, isUp ? 0x50c878 : 0xe74c3c, 1);
+    g.beginPath();
+    for (let i = 0; i < points.length; i++) {
+      if (i === 0) g.moveTo(points[i].x, points[i].y);
+      else g.lineTo(points[i].x, points[i].y);
     }
     g.strokePath();
 
-    // Price dots
-    for (let i = 0; i < prices.length; i++) {
-      const x = chartX + padX + (drawW / (prices.length - 1)) * i;
-      const y = chartY + padY + drawH - ((prices[i] - minPrice) / priceRange) * drawH;
+    // Price dots with glow
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      // Glow
+      g.fillStyle(isUp ? 0x50c878 : 0xe74c3c, 0.2);
+      g.fillCircle(p.x, p.y, 7);
+      // Dot
       g.fillStyle(isUp ? 0x50c878 : 0xe74c3c, 1);
-      g.fillCircle(x, y, 4);
+      g.fillCircle(p.x, p.y, 4);
+      // Highlight
+      if (i === points.length - 1) {
+        g.fillStyle(0xffffff, 0.6);
+        g.fillCircle(p.x, p.y, 2);
+      }
     }
 
     // Current price display
     const currentPrice = prices[prices.length - 1];
-    this.add.text(chartX + chartW / 2, chartY + chartH - 20, `${this.lang === 'he' ? 'מחיר נוכחי:' : 'Current:'} ${formatCurrency(currentPrice, this.lang)}`, {
+    const pricePanel = this.add.graphics();
+    pricePanel.fillStyle(0x000000, 0.5);
+    pricePanel.fillRoundedRect(chartX + chartW / 2 - 140, chartY + chartH - 40, 280, 30, 8);
+    this.add.text(chartX + chartW / 2, chartY + chartH - 25, `${this.lang === 'he' ? 'מחיר נוכחי:' : 'Current:'} ${formatCurrency(currentPrice, this.lang)}`, {
       fontSize: '22px', color: '#ffd700', fontFamily: 'Arial',
     }).setOrigin(0.5);
   }
@@ -223,14 +286,20 @@ export class TradeScene extends BaseScene {
     const panelY = 100;
     const panelW = 630;
 
-    g.fillStyle(0x16213e, 1);
+    // Panel shadow
+    g.fillStyle(0x000000, 0.2);
+    g.fillRoundedRect(panelX + 4, panelY + 4, panelW, 500, 12);
+    // Panel
+    g.fillStyle(0x12203e, 1);
     g.fillRoundedRect(panelX, panelY, panelW, 500, 12);
+    g.lineStyle(1, 0x2a4a6e, 0.5);
+    g.strokeRoundedRect(panelX, panelY, panelW, 500, 12);
 
     const currentPrice = this.selectedStock.prices[this.selectedStock.prices.length - 1];
     const stockName = this.lang === 'he' ? this.selectedStock.nameHe : this.selectedStock.nameEn;
     const holding = this.store.portfolio[this.selectedStock.key];
 
-    // Holdings info
+    // Holdings info with divider
     this.add.text(panelX + 20, panelY + 20, `${stockName}`, {
       fontSize: '24px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
     });
@@ -242,6 +311,12 @@ export class TradeScene extends BaseScene {
     this.add.text(panelX + 20, panelY + 85, `${this.lang === 'he' ? 'מניות:' : 'Shares:'} ${holding.shares}`, {
       fontSize: '20px', color: '#ffd700', fontFamily: 'Arial',
     });
+
+    // Divider
+    g.lineStyle(1, 0x2a4a6e, 0.5);
+    g.moveTo(panelX + 20, panelY + 118);
+    g.lineTo(panelX + panelW - 20, panelY + 118);
+    g.strokePath();
 
     // Quick buy amounts
     const amounts = [1, 5, 10];
@@ -291,11 +366,21 @@ export class TradeScene extends BaseScene {
       }
     }
 
-    // Portfolio summary
+    // Divider before holdings value
+    g.lineStyle(1, 0x2a4a6e, 0.3);
+    g.moveTo(panelX + 20, panelY + 360);
+    g.lineTo(panelX + panelW - 20, panelY + 360);
+    g.strokePath();
+
+    // Portfolio summary with highlight
     const totalValue = holding.shares * currentPrice;
+    const summaryG = this.add.graphics();
+    summaryG.fillStyle(0xffd700, 0.05);
+    summaryG.fillRoundedRect(panelX + 15, panelY + 370, panelW - 30, 40, 6);
+
     this.add.text(panelX + 20, panelY + 380,
       `${this.lang === 'he' ? 'שווי אחזקה:' : 'Holdings value:'} ${formatCurrency(totalValue, this.lang)}`, {
-      fontSize: '20px', color: '#aaa', fontFamily: 'Arial',
+      fontSize: '20px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
     });
   }
 }
