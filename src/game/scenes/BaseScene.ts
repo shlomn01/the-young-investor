@@ -49,6 +49,8 @@ export abstract class BaseScene extends Phaser.Scene {
 
   create() {
     if (this.input.keyboard) {
+      // Allow browser to process keyboard events normally (for React inputs)
+      this.input.keyboard.disableGlobalCapture();
       this.cursors = this.input.keyboard.createCursorKeys();
       this.wasd = {
         W: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -405,7 +407,7 @@ export abstract class BaseScene extends Phaser.Scene {
     charKey: string,
     x: number,
     y: number,
-    scale = 1,
+    scale = 2,
     name?: string
   ): Phaser.GameObjects.Container {
     const container = this.add.container(x, y);
@@ -496,7 +498,7 @@ export abstract class BaseScene extends Phaser.Scene {
     y: number,
     name?: string,
     direction: 'up' | 'left' | 'down' | 'right' = 'down',
-    scale = 1
+    scale = 2
   ): Phaser.GameObjects.Container {
     const container = this.createCharacterSprite(charKey, x, y, scale, name);
     const sprite = container.getData('sprite') as Phaser.GameObjects.Sprite;

@@ -179,9 +179,9 @@ export class BootScene extends BaseScene {
     }
 
     // --- LPC Character Spritesheets ---
-    // 128x128 per frame (Phase 6B upgrade from 64x64)
-    // Walk: 1024x512, 8 columns × 4 rows
-    // Idle: 384x512, 3 columns × 4 rows
+    // 64x64 per frame
+    // Walk: 512x256, 8 columns × 4 rows
+    // Idle: 192x256, 3 columns × 4 rows
     // Row order: up(0), left(1), down(2), right(3)
     const characters = [
       'player', 'npc_dad', 'npc_mom', 'npc_teacher', 'npc_banker',
@@ -190,12 +190,11 @@ export class BootScene extends BaseScene {
     ];
 
     for (const char of characters) {
-      // Try 128px versions first, fall back to 64px
       this.load.spritesheet(`${char}_walk`, `assets/images/characters/${char}_walk.png`, {
-        frameWidth: 128, frameHeight: 128,
+        frameWidth: 64, frameHeight: 64,
       });
       this.load.spritesheet(`${char}_idle`, `assets/images/characters/${char}_idle.png`, {
-        frameWidth: 128, frameHeight: 128,
+        frameWidth: 64, frameHeight: 64,
       });
     }
 
