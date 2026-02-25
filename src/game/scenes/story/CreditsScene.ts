@@ -34,8 +34,8 @@ export class CreditsScene extends BaseScene {
 
     // Title with glow effect
     const titleGlow = this.add.text(this.w / 2, 80, resultTitle, {
-      fontSize: '44px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
-      wordWrap: { width: 1600 }, align: 'center',
+      fontSize: '44px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold',
+      wordWrap: { width: 1600 }, align: 'center', rtl: this.isRtl,
     }).setOrigin(0.5).setAlpha(0.3).setScale(1.03);
     this.tweens.add({
       targets: titleGlow,
@@ -46,8 +46,8 @@ export class CreditsScene extends BaseScene {
     });
 
     this.add.text(this.w / 2, 80, resultTitle, {
-      fontSize: '44px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
-      wordWrap: { width: 1600 }, align: 'center',
+      fontSize: '44px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold',
+      wordWrap: { width: 1600 }, align: 'center', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Results panel with frame
@@ -72,7 +72,7 @@ export class CreditsScene extends BaseScene {
     // Portfolio total with animated scale
     const totalText = this.add.text(this.w / 2, panelY + 50,
       `${this.lang === 'he' ? 'סה"כ:' : 'Total:'} ${formatCurrency(total, this.lang)}`, {
-      fontSize: '48px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5).setAlpha(0).setScale(0.5);
 
     this.tweens.add({
@@ -93,7 +93,7 @@ export class CreditsScene extends BaseScene {
     // What you learned
     const lessonsTitle = this.lang === 'he' ? 'מה למדנו:' : 'What we learned:';
     const lessonsTitleText = this.add.text(this.w / 2, panelY + 120, lessonsTitle, {
-      fontSize: '28px', color: '#87ceeb', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#87ceeb', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5).setAlpha(0);
 
     this.tweens.add({
@@ -125,7 +125,7 @@ export class CreditsScene extends BaseScene {
 
     for (let i = 0; i < lessons.length; i++) {
       const t = this.add.text(this.w / 2, panelY + 165 + i * 35, lessons[i], {
-        fontSize: '22px', color: '#ffffff', fontFamily: 'Arial',
+        fontSize: '22px', color: '#ffffff', fontFamily: this.fontFamily, rtl: this.isRtl,
       }).setOrigin(0.5);
 
       // Staggered fade-in with slide
@@ -150,7 +150,7 @@ export class CreditsScene extends BaseScene {
     g.strokePath();
 
     const creditsTitle = this.add.text(this.w / 2, creditsY, this.lang === 'he' ? 'קרדיטים' : 'Credits', {
-      fontSize: '24px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '24px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5).setAlpha(0);
 
     this.tweens.add({
@@ -167,7 +167,7 @@ export class CreditsScene extends BaseScene {
 
     for (let i = 0; i < credits.length; i++) {
       const ct = this.add.text(this.w / 2, creditsY + 35 + i * 30, credits[i], {
-        fontSize: '18px', color: '#888', fontFamily: 'Arial',
+        fontSize: '18px', color: '#888', fontFamily: this.fontFamily, rtl: this.isRtl,
       }).setOrigin(0.5).setAlpha(0);
 
       this.tweens.add({

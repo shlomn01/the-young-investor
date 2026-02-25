@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS, PORTRAIT_KEYS } from '../../../config/constants';
 import { formatCurrency } from '../../../utils/formatUtils';
 
 export class BankScene extends BaseScene {
@@ -14,6 +14,8 @@ export class BankScene extends BaseScene {
   create() {
     super.create();
 
+    // Interior background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.BANK)) {
     // Interior room with warm beige walls and stone-colored floor
     this.drawInteriorRoom(0xf0ead6, 0xb8a88a, { floorHeight: 150, baseboard: true, ceiling: true });
 
@@ -71,7 +73,7 @@ export class BankScene extends BaseScene {
     dg.fillCircle(180, 290, 50);
     // Vault label
     this.add.text(200, 460, this.lang === 'he' ? 'כספת' : 'VAULT', {
-      fontSize: '16px', color: '#666', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '16px', color: '#666', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // --- Bank counter with glass partition ---
@@ -135,41 +137,43 @@ export class BankScene extends BaseScene {
     dg.fillCircle(1470, this.h - 260, 22);
     dg.fillStyle(0x3cba5f, 0.7);
     dg.fillCircle(1455, this.h - 270, 16);
+    } // end fallback
 
     // Title
     const title = this.lang === 'he' ? 'הבנק' : 'The Bank';
     this.add.text(this.w / 2, 60, title, {
       fontSize: '40px',
       color: '#333',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Bank teller NPC
     const tellerName = this.lang === 'he' ? 'פקיד הבנק' : 'Bank Teller';
-    const teller = this.drawCharacterPlaceholder(960, this.h - 420, 0x2f4f4f, tellerName);
+    const teller = this.createNPC('npc_banker', 960, this.h - 420, tellerName, 'down', 2);
     teller.setInteractive(new Phaser.Geom.Rectangle(-30, -60, 60, 120), Phaser.Geom.Rectangle.Contains);
 
     teller.on('pointerdown', async () => {
       if (!this.store.bankAccountOpened) {
         await this.showDialogue(tellerName, this.lang === 'he'
           ? 'ברוך הבא לבנק! בוא נפתח לך חשבון.'
-          : 'Welcome to the bank! Let\'s open an account for you.');
+          : 'Welcome to the bank! Let\'s open an account for you.', PORTRAIT_KEYS.npc_banker);
         await this.showDialogue(tellerName, this.lang === 'he'
           ? 'מעולה! החשבון שלך נפתח. הפקדנו 1,000 ₪ כמתנת פתיחה!'
-          : 'Great! Your account is now open. We deposited ₪1,000 as a welcome gift!');
+          : 'Great! Your account is now open. We deposited ₪1,000 as a welcome gift!', PORTRAIT_KEYS.npc_banker);
         this.store.openBankAccount();
         this.store.addCash(1000);
       } else {
         const balance = this.store.cash;
         await this.showDialogue(tellerName, this.lang === 'he'
           ? `היתרה שלך: ${formatCurrency(balance, 'he')}`
-          : `Your balance: ${formatCurrency(balance, 'en')}`);
+          : `Your balance: ${formatCurrency(balance, 'en')}`, PORTRAIT_KEYS.npc_banker);
       }
     });
 
     // Player
-    this.drawCharacterPlaceholder(400, this.h - 150, COLORS.PRIMARY);
+    this.createCharacterSprite('player', 400, this.h - 150, 2);
 
     // Back button
     this.createButton(

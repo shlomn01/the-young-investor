@@ -67,7 +67,7 @@ export class HotelRoomScene extends BaseScene {
         dg.fillStyle(0xffd700, 0.8);
         dg.fillRoundedRect(dx + 28, 168, 44, 22, 4);
         this.add.text(dx + 50, 179, `${roomNumbers[i]}`, {
-          fontSize: '14px', color: '#333', fontFamily: 'Arial', fontStyle: 'bold',
+          fontSize: '14px', color: '#333', fontFamily: this.fontFamily, fontStyle: 'bold',
         }).setOrigin(0.5);
       }
 
@@ -117,7 +117,7 @@ export class HotelRoomScene extends BaseScene {
 
     const guruDoorLabel = this.lang === 'he' ? 'חדר VIP' : 'VIP Room';
     this.add.text(this.w / 2, 170, guruDoorLabel, {
-      fontSize: '24px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '24px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     const guruDoor = this.add.zone(this.w / 2, 310, 120, 220)
@@ -137,7 +137,7 @@ export class HotelRoomScene extends BaseScene {
 
     // Title
     this.add.text(this.w / 2, 40, this.lang === 'he' ? 'המסדרון' : 'The Corridor', {
-      fontSize: '32px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '32px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Back

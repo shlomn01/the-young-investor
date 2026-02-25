@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { PORTRAIT_KEYS } from '../../../config/constants';
 import { formatCurrency } from '../../../utils/formatUtils';
 
 const COMPUTERS = [
@@ -98,14 +98,14 @@ export class ComputerShopScene extends BaseScene {
       dg.fillStyle(0xe74c3c, 1);
       dg.fillRoundedRect(this.w / 2 - 60, 80, 120, 40, 8);
       this.add.text(this.w / 2, 100, this.lang === 'he' ? 'מבצע!' : 'SALE!', {
-        fontSize: '24px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+        fontSize: '24px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
       }).setOrigin(0.5);
     }
 
     // Title
     const title = this.lang === 'he' ? 'חנות מחשבים' : 'Computer Shop';
     this.add.text(this.w / 2, 40, title, {
-      fontSize: '36px', color: '#333', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#333', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Display computers
@@ -152,18 +152,18 @@ export class ComputerShopScene extends BaseScene {
       // Label
       const name = this.lang === 'he' ? comp.nameHe : comp.nameEn;
       this.add.text(cx, cy + 70, name, {
-        fontSize: '22px', color: '#333', fontFamily: 'Arial', fontStyle: 'bold',
+        fontSize: '22px', color: '#333', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
       }).setOrigin(0.5);
 
       this.add.text(cx, cy + 100, formatCurrency(comp.price, this.lang), {
-        fontSize: '20px', color: '#4a90d9', fontFamily: 'Arial',
+        fontSize: '20px', color: '#4a90d9', fontFamily: this.fontFamily, rtl: this.isRtl,
       }).setOrigin(0.5);
 
       // Description
       const desc = this.lang === 'he' ? comp.descHe : comp.descEn;
       this.add.text(cx, cy + 125, desc, {
-        fontSize: '14px', color: '#666', fontFamily: 'Arial',
-        wordWrap: { width: 200 }, align: 'center',
+        fontSize: '14px', color: '#666', fontFamily: this.fontFamily,
+        wordWrap: { width: 200 }, align: 'center', rtl: this.isRtl,
       }).setOrigin(0.5);
 
       // Buy button
@@ -175,12 +175,14 @@ export class ComputerShopScene extends BaseScene {
             this.store.setHasComputer(true, comp.price);
             this.showDialogue(
               this.lang === 'he' ? 'מוכר' : 'Seller',
-              this.lang === 'he' ? `מזל טוב! קנית ${comp.nameHe}!` : `Congratulations! You bought the ${comp.nameEn}!`
+              this.lang === 'he' ? `מזל טוב! קנית ${comp.nameHe}!` : `Congratulations! You bought the ${comp.nameEn}!`,
+              PORTRAIT_KEYS.npc_shopkeeper
             );
           } else {
             this.showDialogue(
               this.lang === 'he' ? 'מוכר' : 'Seller',
-              this.lang === 'he' ? 'אין לך מספיק כסף!' : 'You don\'t have enough money!'
+              this.lang === 'he' ? 'אין לך מספיק כסף!' : 'You don\'t have enough money!',
+              PORTRAIT_KEYS.npc_shopkeeper
             );
           }
         },
@@ -190,10 +192,10 @@ export class ComputerShopScene extends BaseScene {
 
     // Shopkeeper
     const shopkeepName = this.lang === 'he' ? 'המוכר' : 'Shopkeeper';
-    this.drawCharacterPlaceholder(1600, this.h - 150, 0x2f4f4f, shopkeepName);
+    this.createNPC('npc_shopkeeper', 1600, this.h - 150, shopkeepName, 'down', 2);
 
     // Player
-    this.drawCharacterPlaceholder(200, this.h - 150, COLORS.PRIMARY);
+    this.createCharacterSprite('player', 200, this.h - 150, 2);
 
     // Back
     this.createButton(100, this.h - 40,

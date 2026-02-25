@@ -47,14 +47,14 @@ export class TradingSimGame extends BaseScene {
 
     // Title
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'סימולציית מסחר' : 'Trading Simulation', {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Instructions
     this.add.text(this.w / 2, 70, this.lang === 'he'
       ? 'הגדר פקודות קנייה/מכירה במחיר שתבחר. המחיר משתנה בזמן אמת!'
       : 'Set buy/sell orders at your chosen price. The price changes in real-time!', {
-      fontSize: '20px', color: '#aaa', fontFamily: 'Arial',
+      fontSize: '20px', color: '#aaa', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Live price display with panel
@@ -65,7 +65,7 @@ export class TradingSimGame extends BaseScene {
     pricePanel.strokeRoundedRect(this.w / 2 - 120, 100, 240, 60, 12);
 
     this.priceText = this.add.text(this.w / 2, 130, `₪${this.currentPrice}`, {
-      fontSize: '48px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Chart area
@@ -84,7 +84,7 @@ export class TradingSimGame extends BaseScene {
     buyPanel.strokeRoundedRect(150, 530, 700, 120, 12);
 
     this.add.text(300, 545, this.lang === 'he' ? 'פקודות קנייה (Limit Buy)' : 'Buy Orders (Limit Buy)', {
-      fontSize: '22px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '22px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
 
     for (let i = 0; i < buyPrices.length; i++) {
@@ -102,7 +102,7 @@ export class TradingSimGame extends BaseScene {
     sellPanel.strokeRoundedRect(150, 660, 700, 120, 12);
 
     this.add.text(300, 680, this.lang === 'he' ? 'פקודות מכירה (Limit Sell)' : 'Sell Orders (Limit Sell)', {
-      fontSize: '22px', color: '#e74c3c', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '22px', color: '#e74c3c', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
 
     for (let i = 0; i < sellPrices.length; i++) {
@@ -120,7 +120,7 @@ export class TradingSimGame extends BaseScene {
     ordersPanel.strokeRoundedRect(1080, 530, 400, 250, 12);
 
     this.add.text(1200, 545, this.lang === 'he' ? 'הפקודות שלי:' : 'My Orders:', {
-      fontSize: '22px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '22px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
 
     // Price ticker
@@ -139,7 +139,7 @@ export class TradingSimGame extends BaseScene {
     timerPanel.fillRoundedRect(this.w - 130, 12, 110, 36, 8);
     let timeLeft = 30;
     const timerText = this.add.text(this.w - 50, 30, `⏱ ${timeLeft}`, {
-      fontSize: '24px', color: '#ffd700', fontFamily: 'Arial',
+      fontSize: '24px', color: '#ffd700', fontFamily: this.fontFamily,
     }).setOrigin(1, 0);
 
     this.time.addEvent({
@@ -283,8 +283,8 @@ export class TradingSimGame extends BaseScene {
       : (this.lang === 'he' ? `מכירה בוצעה ב-₪${order.price}!` : `Sell executed at ₪${order.price}!`);
 
     const notification = this.add.text(this.w / 2, this.h / 2, text, {
-      fontSize: '32px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
-      backgroundColor: 'rgba(0,0,0,0.8)', padding: { x: 16, y: 8 },
+      fontSize: '32px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold',
+      backgroundColor: 'rgba(0,0,0,0.8)', padding: { x: 16, y: 8 }, rtl: this.isRtl,
     }).setOrigin(0.5).setDepth(100);
 
     this.tweens.add({
@@ -317,7 +317,7 @@ export class TradingSimGame extends BaseScene {
       this.orderGraphics.push(rowG);
 
       const t = this.add.text(1110, y, `${statusIcon} ${typeLabel} @ ₪${order.price}`, {
-        fontSize: '18px', color, fontFamily: 'Arial',
+        fontSize: '18px', color, fontFamily: this.fontFamily, rtl: this.isRtl,
       });
       this.orderTexts.push(t);
       y += 32;
@@ -347,12 +347,12 @@ export class TradingSimGame extends BaseScene {
 
     this.add.text(this.w / 2, panelY + 50,
       this.lang === 'he' ? 'סימולציה הסתיימה!' : 'Simulation Complete!', {
-      fontSize: '44px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '44px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5).setDepth(100);
 
     this.add.text(this.w / 2, panelY + 130,
       `${this.lang === 'he' ? 'פקודות שבוצעו:' : 'Orders executed:'} ${executed}/${this.orders.length}`, {
-      fontSize: '28px', color: '#ffffff', fontFamily: 'Arial',
+      fontSize: '28px', color: '#ffffff', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(0.5).setDepth(100);
 
     // Progress bar
@@ -371,7 +371,7 @@ export class TradingSimGame extends BaseScene {
       ? (this.lang === 'he' ? 'כל הפקודות בוצעו!' : 'All orders executed!')
       : (this.lang === 'he' ? 'תרגול מצוין!' : 'Great practice!');
     this.add.text(this.w / 2, panelY + 230, msg, {
-      fontSize: '22px', color: '#87ceeb', fontFamily: 'Arial',
+      fontSize: '22px', color: '#87ceeb', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(0.5).setDepth(100);
 
     this.createButton(this.w / 2, panelY + panelH + 30,

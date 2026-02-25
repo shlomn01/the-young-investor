@@ -58,7 +58,7 @@ export class StockChart {
         this.scene.add.text(x + padX - 10, gy, `₪${priceLabel}`, {
           fontSize: '12px',
           color: '#666',
-          fontFamily: 'Arial',
+          fontFamily: 'Heebo, Poppins, sans-serif',
         }).setOrigin(1, 0.5);
       }
     }
@@ -118,7 +118,7 @@ export class StockChart {
       this.scene.add.text(x + width / 2, y + 15, this.config.label, {
         fontSize: '20px',
         color: '#ffffff',
-        fontFamily: 'Arial',
+        fontFamily: 'Heebo, Poppins, sans-serif',
         fontStyle: 'bold',
       }).setOrigin(0.5);
     }

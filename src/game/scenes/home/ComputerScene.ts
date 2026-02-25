@@ -107,8 +107,9 @@ export class ComputerScene extends BaseScene {
     this.add.text(screenX + screenW / 2, screenY + 25, title, {
       fontSize: '28px',
       color: '#ffffff',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Portfolio display
@@ -123,10 +124,10 @@ export class ComputerScene extends BaseScene {
     g2.fillRoundedRect(contentLeft - 20, startY - 8, contentRight - contentLeft + 40, 36, 6);
 
     this.add.text(contentLeft, startY, this.lang === 'he' ? 'מזומן:' : 'Cash:', {
-      fontSize: '24px', color: '#87ceeb', fontFamily: 'Arial',
+      fontSize: '24px', color: '#87ceeb', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
     this.add.text(contentRight, startY, formatCurrency(state.cash, state.language), {
-      fontSize: '24px', color: '#50c878', fontFamily: 'Arial',
+      fontSize: '24px', color: '#50c878', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(1, 0);
 
     // Stocks
@@ -150,16 +151,16 @@ export class ComputerScene extends BaseScene {
       }
 
       this.add.text(contentLeft, y, stock.name, {
-        fontSize: '22px', color: '#ffffff', fontFamily: 'Arial',
+        fontSize: '22px', color: '#ffffff', fontFamily: this.fontFamily, rtl: this.isRtl,
       });
       this.add.text(contentLeft + 300, y, `${holding.shares} ${this.lang === 'he' ? 'מניות' : 'shares'}`, {
-        fontSize: '22px', color: '#aaa', fontFamily: 'Arial',
+        fontSize: '22px', color: '#aaa', fontFamily: this.fontFamily, rtl: this.isRtl,
       });
       this.add.text(contentLeft + 600, y, `@ ${formatCurrency(price, state.language)}`, {
-        fontSize: '22px', color: '#aaa', fontFamily: 'Arial',
+        fontSize: '22px', color: '#aaa', fontFamily: this.fontFamily, rtl: this.isRtl,
       });
       this.add.text(contentRight, y, formatCurrency(value, state.language), {
-        fontSize: '22px', color: value > 0 ? '#50c878' : '#888', fontFamily: 'Arial',
+        fontSize: '22px', color: value > 0 ? '#50c878' : '#888', fontFamily: this.fontFamily, rtl: this.isRtl,
       }).setOrigin(1, 0);
 
       y += 45;
@@ -181,17 +182,17 @@ export class ComputerScene extends BaseScene {
     g2.fillRoundedRect(contentLeft - 20, y - 8, contentRight - contentLeft + 40, 40, 6);
 
     this.add.text(contentLeft, y, this.lang === 'he' ? 'סה"כ:' : 'Total:', {
-      fontSize: '28px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
     this.add.text(contentRight, y, formatCurrency(total, state.language), {
-      fontSize: '28px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(1, 0);
 
     // Goal progress
     y += 60;
     const progress = Math.min((total / state.destination) * 100, 100);
     this.add.text(contentLeft, y, `${this.lang === 'he' ? 'יעד:' : 'Goal:'} ${formatCurrency(state.destination, state.language)}`, {
-      fontSize: '22px', color: '#87ceeb', fontFamily: 'Arial',
+      fontSize: '22px', color: '#87ceeb', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
 
     y += 35;
@@ -207,7 +208,7 @@ export class ComputerScene extends BaseScene {
     g2.fillRoundedRect(contentLeft + 2, y + 2, barFillW - 4, 12, { tl: 6, tr: 6, bl: 0, br: 0 });
 
     this.add.text(this.w / 2, y + 15, `${progress.toFixed(1)}%`, {
-      fontSize: '18px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '18px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Back button

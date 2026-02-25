@@ -87,7 +87,7 @@ export class InstructionsScene extends BaseScene {
 
     // Title
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'הוראות - דבר עם כל הדמויות!' : 'Instructions - Talk to all characters!', {
-      fontSize: '28px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Create platforms

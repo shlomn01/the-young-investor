@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS, PLAYER_SPEED } from '../../../config/constants';
+import { PLAYER_SPEED } from '../../../config/constants';
 
 interface StreetConfig {
   streetIndex: number;
@@ -16,6 +16,31 @@ interface StreetConfig {
   exitLeft?: { scene: string; data?: Record<string, unknown> };
   exitRight?: { scene: string; data?: Record<string, unknown> };
 }
+
+// Map street index to background texture key
+const STREET_BG_MAP: Record<number, string> = {
+  0: 'bg_street_residential',
+  1: 'bg_street_residential',
+  2: 'bg_street_commercial',
+  3: 'bg_street_residential',
+  4: 'bg_street_commercial',
+  5: 'bg_street_residential',
+  6: 'bg_street_urban',
+  7: 'bg_street_commercial',
+  8: 'bg_street_urban',
+};
+
+// Map building label to sprite texture key
+const BUILDING_SPRITE_MAP: Record<string, string> = {
+  'Home': 'bld_home',
+  'School': 'bld_school',
+  'Bank': 'bld_bank',
+  'Library': 'bld_library',
+  'Stock Exchange': 'bld_stock_exchange',
+  'Hotel': 'bld_hotel',
+  'Synagogue': 'bld_synagogue',
+  'Computer Shop': 'bld_computer_shop',
+};
 
 const STREET_CONFIGS: StreetConfig[] = [
   // Street 0 - Starting street: Home
@@ -127,7 +152,7 @@ export class StreetScene extends BaseScene {
   private config!: StreetConfig;
   private entranceZones: Array<{ zone: Phaser.GameObjects.Zone; targetScene: string; targetData?: Record<string, unknown> }> = [];
   private nearEntrance = false;
-  private currentEntrance: { targetScene: string; targetData?: Record<string, unknown> } | null = null;
+  private currentEntrance: { zone: Phaser.GameObjects.Zone; targetScene: string; targetData?: Record<string, unknown> } | null = null;
   private promptText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -145,42 +170,98 @@ export class StreetScene extends BaseScene {
     this.nearEntrance = false;
     this.currentEntrance = null;
 
-    // --- Sky background with sun and clouds ---
-    this.drawSkyBackground('day');
-
-    // --- Ground layers ---
     const groundY = this.h - 200;
-    this.drawGround(groundY);
 
-    // --- Environmental details (trees, bushes, lamp posts) ---
-    this.drawEnvironment(groundY);
+    // --- Background: use image if available, fallback to programmatic ---
+    const bgKey = STREET_BG_MAP[this.streetIndex] || 'bg_street_residential';
+    const hasBackground = this.textures.exists(bgKey);
+    if (hasBackground) {
+      this.add.image(this.w / 2, this.h / 2, bgKey).setDisplaySize(this.w, this.h);
+    } else {
+      this.drawSkyBackground('day');
+      this.drawGround(groundY);
+      this.drawEnvironment(groundY);
+    }
+
+    // Buildings sit on grass (above sidewalk) when using image backgrounds,
+    // or at groundY when using programmatic drawing
+    const buildingBaseY = hasBackground ? groundY - 130 : groundY;
 
     // --- Street label with styled background panel ---
     this.drawStreetLabel();
 
     // --- Buildings ---
+    // Scale building height based on how many buildings share the street
+    const numBuildings = this.config.buildings.length;
+    const targetH = numBuildings === 1 ? 450 : numBuildings === 2 ? 380 : 320;
+
     for (const building of this.config.buildings) {
-      const bWidth = 200;
-      const bHeight = 250;
-      const bx = building.x - bWidth / 2;
-      const by = groundY - bHeight;
       const label = this.lang === 'he' ? building.labelHe : building.label;
 
-      this.drawBuilding(bx, by, bWidth, bHeight, building.color, label);
+      // Use building sprite if available, fallback to programmatic
+      const spriteKey = BUILDING_SPRITE_MAP[building.label];
+      if (spriteKey && this.textures.exists(spriteKey)) {
+        // Calculate display width from image's natural aspect ratio
+        const srcImage = this.textures.get(spriteKey).getSourceImage() as HTMLImageElement;
+        const aspect = srcImage.width / srcImage.height;
+        const dispH = targetH;
+        const dispW = dispH * aspect;
+        const buildingTop = buildingBaseY - dispH;
 
-      // Arrow indicator above building
-      const arrow = this.add.text(building.x, by - 30, '\u25BC', {
-        fontSize: '32px',
-        color: '#ffd700',
-      }).setOrigin(0.5);
-      this.tweens.add({
-        targets: arrow,
-        y: by - 20,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
+        this.add.image(building.x, buildingBaseY, spriteKey)
+          .setOrigin(0.5, 1.0)
+          .setDisplaySize(dispW, dispH);
+
+        // Label sign overlay
+        const signW = Math.min(dispW - 10, label.length * 14 + 30);
+        const signX = building.x - signW / 2;
+        const signG = this.add.graphics();
+        signG.fillStyle(0x2c2c2c, 0.85);
+        signG.fillRoundedRect(signX, buildingTop - 40, signW, 28, 6);
+        signG.lineStyle(2, 0xffd700, 1);
+        signG.strokeRoundedRect(signX, buildingTop - 40, signW, 28, 6);
+        this.add.text(building.x, buildingTop - 26, label, {
+          fontSize: '18px',
+          color: '#ffd700',
+          fontFamily: this.fontFamily,
+          fontStyle: 'bold',
+          rtl: this.isRtl,
+        }).setOrigin(0.5);
+
+        // Arrow indicator above building
+        const arrow = this.add.text(building.x, buildingTop - 50, '\u25BC', {
+          fontSize: '32px',
+          color: '#ffd700',
+        }).setOrigin(0.5);
+        this.tweens.add({
+          targets: arrow,
+          y: buildingTop - 40,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+      } else {
+        const bWidth = 200;
+        const bHeight = 250;
+        const bx = building.x - bWidth / 2;
+        const by = groundY - bHeight;
+        this.drawBuilding(bx, by, bWidth, bHeight, building.color, label);
+
+        // Arrow indicator above building
+        const arrow = this.add.text(building.x, by - 30, '\u25BC', {
+          fontSize: '32px',
+          color: '#ffd700',
+        }).setOrigin(0.5);
+        this.tweens.add({
+          targets: arrow,
+          y: by - 20,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+      }
 
       // Entrance zone
       const zone = this.add.zone(building.x, this.h - 230, 80, 80);
@@ -199,7 +280,7 @@ export class StreetScene extends BaseScene {
         color: '#ffffff',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       leftArrow.on('pointerdown', () => {
-        this.goToScene(this.config.exitLeft!.scene, this.config.exitLeft!.data);
+        this.slideToScene(this.config.exitLeft!.scene, 'left', this.config.exitLeft!.data);
       });
 
       // Left exit zone
@@ -217,7 +298,7 @@ export class StreetScene extends BaseScene {
         color: '#ffffff',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       rightArrow.on('pointerdown', () => {
-        this.goToScene(this.config.exitRight!.scene, this.config.exitRight!.data);
+        this.slideToScene(this.config.exitRight!.scene, 'right', this.config.exitRight!.data);
       });
 
       const rightZone = this.add.zone(this.w, this.h - 300, 40, 400);
@@ -229,8 +310,8 @@ export class StreetScene extends BaseScene {
       });
     }
 
-    // Player
-    this.player = this.drawCharacterPlaceholder(this.w / 2, this.h - 260, COLORS.PRIMARY, this.store.playerName || undefined);
+    // Player (real animated sprite)
+    this.player = this.createCharacterSprite('player', this.w / 2, this.h - 260, 2.5, this.store.playerName || undefined);
     this.physics.add.existing(this.player);
     this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     this.playerBody.setCollideWorldBounds(true);
@@ -239,9 +320,10 @@ export class StreetScene extends BaseScene {
     this.promptText = this.add.text(this.w / 2, this.h - 340, '', {
       fontSize: '20px',
       color: '#ffd700',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       backgroundColor: 'rgba(0,0,0,0.7)',
       padding: { x: 12, y: 6 },
+      rtl: this.isRtl,
     }).setOrigin(0.5).setVisible(false);
 
     // Overlap detection with entrance zones
@@ -417,22 +499,38 @@ export class StreetScene extends BaseScene {
     this.add.text(this.w / 2, panelY + panelH / 2, streetLabel, {
       fontSize: '26px',
       color: '#ffffff',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 2,
+      rtl: this.isRtl,
     }).setOrigin(0.5);
   }
 
   update() {
     if (!this.cursors || !this.playerBody) return;
 
-    // Movement
+    // Movement with animation
     let vx = 0;
+    const sprite = this.player.getData('sprite') as Phaser.GameObjects.Sprite | undefined;
     if (this.cursors.left.isDown || this.wasd.A.isDown) {
       vx = -PLAYER_SPEED;
+      if (sprite && sprite.anims.currentAnim?.key !== 'player_walk_left') {
+        sprite.play('player_walk_left');
+      }
     } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
       vx = PLAYER_SPEED;
+      if (sprite && sprite.anims.currentAnim?.key !== 'player_walk_right') {
+        sprite.play('player_walk_right');
+      }
+    } else {
+      // Idle animation when not moving
+      if (sprite && sprite.anims.currentAnim && !sprite.anims.currentAnim.key.includes('idle')) {
+        const dir = sprite.anims.currentAnim.key.includes('left') ? 'left' :
+                    sprite.anims.currentAnim.key.includes('right') ? 'right' :
+                    sprite.anims.currentAnim.key.includes('up') ? 'up' : 'down';
+        sprite.play(`player_idle_${dir}`);
+      }
     }
     this.playerBody.setVelocityX(vx);
 
@@ -462,8 +560,13 @@ export class StreetScene extends BaseScene {
     // Enter building
     if (this.nearEntrance && this.currentEntrance) {
       if (this.cursors.up.isDown || this.wasd.W.isDown || this.wasd.SPACE.isDown) {
-        const { targetScene, targetData } = this.currentEntrance;
-        this.goToScene(targetScene, targetData);
+        const { targetScene, targetData, zone } = this.currentEntrance;
+        if (targetScene === 'Street') {
+          const direction = zone.x < this.w / 2 ? 'left' : 'right';
+          this.slideToScene(targetScene, direction, targetData);
+        } else {
+          this.zoomToScene(targetScene, this.player.x, this.player.y, targetData);
+        }
       }
     }
   }

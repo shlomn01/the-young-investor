@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { useGameStore } from '../../store/gameStore';
 
 export interface DialogueBoxConfig {
   x: number;
@@ -38,12 +39,15 @@ export class DialogueBox {
     this.container.add(g);
 
     // Speaker name
+    const isRtl = useGameStore.getState().language === 'he';
+
     if (config.speakerName) {
       const nameText = scene.add.text(-width / 2 + 10, -55, config.speakerName, {
         fontSize: '14px',
         color: '#4a90d9',
-        fontFamily: 'Arial',
+        fontFamily: 'Heebo, Poppins, sans-serif',
         fontStyle: 'bold',
+        rtl: isRtl,
       });
       this.container.add(nameText);
     }
@@ -52,9 +56,10 @@ export class DialogueBox {
     this.textObj = scene.add.text(0, -25, '', {
       fontSize: '16px',
       color: '#333333',
-      fontFamily: 'Arial',
+      fontFamily: 'Heebo, Poppins, sans-serif',
       wordWrap: { width: width - 20 },
       align: 'center',
+      rtl: isRtl,
     }).setOrigin(0.5);
     this.container.add(this.textObj);
 

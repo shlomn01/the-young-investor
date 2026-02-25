@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { COLORS, BG_KEYS } from '../../../config/constants';
 
 interface QuizQuestion {
   question: string;
@@ -41,10 +41,13 @@ export class StockQuizGame extends BaseScene {
     this.score = 0;
     this.questions = this.lang === 'he' ? QUESTIONS.he : QUESTIONS.en;
 
-    this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    // Background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.QUIZ_STAGE)) {
+      this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    }
 
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'חידון מניות!' : 'Stock Quiz!', {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.showQ();
@@ -59,7 +62,9 @@ export class StockQuizGame extends BaseScene {
 
     // Clear previous
     this.children.removeAll();
-    this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    if (!this.tryShowBackground(BG_KEYS.QUIZ_STAGE)) {
+      this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    }
 
     const g = this.add.graphics();
 
@@ -73,7 +78,7 @@ export class StockQuizGame extends BaseScene {
 
     // Title
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'חידון מניות!' : 'Stock Quiz!', {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Score display with panel
@@ -84,10 +89,10 @@ export class StockQuizGame extends BaseScene {
     scorePanel.strokeRoundedRect(this.w - 200, 12, 180, 44, 10);
 
     this.add.text(this.w - 185, 22, this.lang === 'he' ? 'ניקוד:' : 'Score:', {
-      fontSize: '16px', color: '#aaaaaa', fontFamily: 'Arial',
+      fontSize: '16px', color: '#aaaaaa', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
     this.add.text(this.w - 40, 34, `${this.score}/${this.questions.length}`, {
-      fontSize: '28px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(1, 0.5);
 
     // Progress bar
@@ -108,7 +113,7 @@ export class StockQuizGame extends BaseScene {
       g.fillCircle(dotX, barY, 4);
     }
     this.add.text(barX + barW / 2, barY - 22, `${this.currentQ + 1}/${this.questions.length}`, {
-      fontSize: '14px', color: '#888', fontFamily: 'Arial',
+      fontSize: '14px', color: '#888', fontFamily: this.fontFamily,
     }).setOrigin(0.5);
 
     const q = this.questions[this.currentQ];
@@ -122,8 +127,8 @@ export class StockQuizGame extends BaseScene {
     g.strokeRoundedRect(qPanelX, 130, qPanelW, 100, 16);
 
     this.add.text(this.w / 2, 180, q.question, {
-      fontSize: '36px', color: '#ffffff', fontFamily: 'Arial',
-      wordWrap: { width: 1100 }, align: 'center',
+      fontSize: '36px', color: '#ffffff', fontFamily: this.fontFamily,
+      wordWrap: { width: 1100 }, align: 'center', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Player
@@ -158,8 +163,8 @@ export class StockQuizGame extends BaseScene {
       container.add(btnBg);
 
       const label = this.add.text(0, btnH / 2, text, {
-        fontSize: '24px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
-        wordWrap: { width: 450 }, align: 'center',
+        fontSize: '24px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold',
+        wordWrap: { width: 450 }, align: 'center', rtl: this.isRtl,
       }).setOrigin(0.5);
       container.add(label);
 
@@ -187,7 +192,9 @@ export class StockQuizGame extends BaseScene {
   private endGame() {
     this.store.completeMiniGame('stockquiz');
     this.children.removeAll();
-    this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    if (!this.tryShowBackground(BG_KEYS.QUIZ_STAGE)) {
+      this.drawGradientBg(0x0a2a2e, 0x0a1a3e);
+    }
 
     const g = this.add.graphics();
 
@@ -207,11 +214,11 @@ export class StockQuizGame extends BaseScene {
     g.strokeRoundedRect(panelX, panelY, panelW, panelH, 20);
 
     this.add.text(this.w / 2, panelY + 45, this.lang === 'he' ? 'תוצאות' : 'Results', {
-      fontSize: '48px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.add.text(this.w / 2, panelY + 120, `${this.score} / ${this.questions.length}`, {
-      fontSize: '64px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '64px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     const rating = this.score >= 5 ? '⭐⭐⭐' : this.score >= 3 ? '⭐⭐' : '⭐';
@@ -230,7 +237,7 @@ export class StockQuizGame extends BaseScene {
     // Percentage label
     const pct = Math.round((this.score / this.questions.length) * 100);
     this.add.text(barX + barW / 2, barY + 10, `${pct}%`, {
-      fontSize: '14px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '14px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Message
@@ -240,7 +247,7 @@ export class StockQuizGame extends BaseScene {
       ? (this.lang === 'he' ? 'טוב מאוד!' : 'Very good!')
       : (this.lang === 'he' ? 'נסה שוב!' : 'Try again!');
     this.add.text(this.w / 2, panelY + 310, msg, {
-      fontSize: '26px', color: '#87ceeb', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '26px', color: '#87ceeb', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.createButton(this.w / 2, panelY + panelH + 40,

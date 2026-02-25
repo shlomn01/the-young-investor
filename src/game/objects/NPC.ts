@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { useGameStore } from '../../store/gameStore';
 
 export interface NPCConfig {
   name: string;
@@ -44,7 +45,8 @@ export class NPC {
     const nameText = scene.add.text(0, -65, config.name, {
       fontSize: '16px',
       color: '#ffffff',
-      fontFamily: 'Arial',
+      fontFamily: 'Heebo, Poppins, sans-serif',
+      rtl: useGameStore.getState().language === 'he',
     }).setOrigin(0.5);
     this.container.add(nameText);
 

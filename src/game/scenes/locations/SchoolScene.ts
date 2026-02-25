@@ -1,4 +1,5 @@
 import { BaseScene } from '../BaseScene';
+import { BG_KEYS } from '../../../config/constants';
 
 interface LessonPage {
   title: string;
@@ -73,6 +74,8 @@ export class SchoolScene extends BaseScene {
     const lesson = LESSONS[this.lessonId] || LESSONS[1];
     this.pages = this.lang === 'he' ? lesson.he : lesson.en;
 
+    // Interior background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.SCHOOL)) {
     // Interior room with warm white walls and classroom floor
     this.drawInteriorRoom(0xfff8e7, 0xc9b896, { floorHeight: 150, ceiling: true });
 
@@ -167,32 +170,35 @@ export class SchoolScene extends BaseScene {
       dg.fillRect(dx + 5, dy + 12, 5, 30);
       dg.fillRect(dx + 110, dy + 12, 5, 30);
     }
+    } // end fallback
 
     // Teacher
     const teacherName = this.lang === 'he' ? 'המורה' : 'Teacher';
-    this.drawCharacterPlaceholder(200, this.h - 200, 0x800000, teacherName);
+    this.createNPC('npc_teacher', 200, this.h - 200, teacherName, 'down', 2);
 
     // Lesson content on blackboard
     this.titleText = this.add.text(this.w / 2, 150, '', {
       fontSize: '36px',
       color: '#ffffff',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.contentText = this.add.text(this.w / 2, 330, '', {
       fontSize: '24px',
       color: '#e0e0e0',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       wordWrap: { width: this.w - 700 },
       align: 'center',
       lineSpacing: 8,
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.pageIndicator = this.add.text(this.w / 2, 550, '', {
       fontSize: '18px',
       color: '#888',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
     }).setOrigin(0.5);
 
     this.showPage(0);

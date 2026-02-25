@@ -2,10 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/gameStore';
 import { phaserBridge } from '../../utils/phaserBridge';
+import { FONTS, CSS_COLORS } from '../../config/constants';
 
 interface DialogueData {
   speaker: string;
   text: string;
+  portrait?: string;
   onComplete?: () => void;
 }
 
@@ -93,6 +95,8 @@ export function DialogueOverlay() {
 
   if (!visible || !data) return null;
 
+  const font = isRtl ? FONTS.he : FONTS.en;
+
   return (
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
@@ -107,50 +111,88 @@ export function DialogueOverlay() {
         pointerEvents: 'auto',
         zIndex: 50,
         cursor: 'pointer',
+        animation: 'slide-in-bottom 0.25s ease-out',
       }}
     >
       <div style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        borderRadius: 16,
+        background: CSS_COLORS.bgDark,
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderRadius: 20,
         padding: '20px 28px',
-        border: '2px solid rgba(74, 144, 217, 0.5)',
-        backdropFilter: 'blur(8px)',
+        border: `2px solid rgba(255, 215, 0, 0.35)`,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 16px rgba(255,215,0,0.15)',
+        display: 'flex',
+        gap: 16,
+        alignItems: 'flex-start',
       }}>
-        {/* Speaker name */}
-        <div style={{
-          fontSize: 18,
-          color: '#ffd700',
-          fontWeight: 'bold',
-          marginBottom: 8,
-          fontFamily: 'Arial, sans-serif',
-        }}>
-          {data.speaker}
-        </div>
-
-        {/* Dialogue text */}
-        <div style={{
-          fontSize: 22,
-          color: '#fff',
-          lineHeight: 1.6,
-          fontFamily: 'Arial, sans-serif',
-          minHeight: 60,
-        }}>
-          {displayedText}
-          {isTyping && <span style={{ opacity: 0.5 }}>▌</span>}
-        </div>
-
-        {/* Continue hint */}
-        {!isTyping && (
+        {/* Character Portrait */}
+        {data.portrait && (
           <div style={{
-            fontSize: 14,
-            color: '#888',
-            textAlign: 'center',
-            marginTop: 8,
-            fontFamily: 'Arial, sans-serif',
+            width: 72,
+            height: 72,
+            borderRadius: 12,
+            border: `2px solid ${CSS_COLORS.accent}`,
+            overflow: 'hidden',
+            flexShrink: 0,
+            background: 'rgba(0,0,0,0.3)',
           }}>
-            {t('dialogue.next')} ▶
+            <img
+              src={`assets/images/characters/portraits/${data.portrait}.png`}
+              alt={data.speaker}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
           </div>
         )}
+
+        <div style={{ flex: 1 }}>
+          {/* Speaker name */}
+          <div style={{
+            fontSize: 17,
+            color: CSS_COLORS.accent,
+            fontWeight: 700,
+            marginBottom: 6,
+            fontFamily: font,
+            textShadow: '0 0 8px rgba(255,215,0,0.3)',
+            letterSpacing: '0.02em',
+          }}>
+            {data.speaker}
+          </div>
+
+          {/* Dialogue text */}
+          <div style={{
+            fontSize: 21,
+            color: CSS_COLORS.textLight,
+            lineHeight: 1.7,
+            fontFamily: font,
+            fontWeight: 400,
+            minHeight: 52,
+          }}>
+            {displayedText}
+            {isTyping && (
+              <span style={{
+                opacity: 0.6,
+                animation: 'typewriter-cursor 0.8s ease-in-out infinite',
+                marginInlineStart: 2,
+              }}>▌</span>
+            )}
+          </div>
+
+          {/* Continue hint */}
+          {!isTyping && (
+            <div style={{
+              fontSize: 13,
+              color: CSS_COLORS.textMuted,
+              textAlign: isRtl ? 'left' : 'right',
+              marginTop: 6,
+              fontFamily: font,
+              opacity: 0.7,
+            }}>
+              {t('dialogue.next')} ▶
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

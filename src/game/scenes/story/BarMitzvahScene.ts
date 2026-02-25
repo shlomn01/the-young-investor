@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS, PORTRAIT_KEYS } from '../../../config/constants';
 import { formatCurrency } from '../../../utils/formatUtils';
 
 const BAR_MITZVAH_MONEY = 5000;
@@ -12,151 +12,153 @@ export class BarMitzvahScene extends BaseScene {
   create() {
     super.create();
 
-    const g = this.add.graphics();
+    if (!this.tryShowBackground(BG_KEYS.BAR_MITZVAH)) {
+      const g = this.add.graphics();
 
-    // Synagogue interior - warm stone walls with gradient
-    const wallSteps = 20;
-    for (let i = 0; i < wallSteps; i++) {
-      const t = i / wallSteps;
-      const r = Math.floor(Phaser.Math.Linear(0xfa, 0xe8, t));
-      const gr = Math.floor(Phaser.Math.Linear(0xf0, 0xd8, t));
-      const b = Math.floor(Phaser.Math.Linear(0xe6, 0xc8, t));
-      g.fillStyle((r << 16) | (gr << 8) | b, 1);
-      g.fillRect(0, (i * this.h) / wallSteps, this.w, this.h / wallSteps + 1);
-    }
-    // Golden overlay
-    g.fillStyle(0xdaa520, 0.1);
-    g.fillRect(0, 0, this.w, this.h);
-
-    // Stone wall texture - subtle brick pattern
-    g.fillStyle(0x000000, 0.03);
-    for (let row = 0; row < Math.floor(this.h / 30); row++) {
-      const ry = row * 30;
-      g.fillRect(0, ry, this.w, 1);
-      const offset = row % 2 === 0 ? 0 : 40;
-      for (let col = offset; col < this.w; col += 80) {
-        g.fillRect(col, ry, 1, 30);
+      // Synagogue interior - warm stone walls with gradient
+      const wallSteps = 20;
+      for (let i = 0; i < wallSteps; i++) {
+        const t = i / wallSteps;
+        const r = Math.floor(Phaser.Math.Linear(0xfa, 0xe8, t));
+        const gr = Math.floor(Phaser.Math.Linear(0xf0, 0xd8, t));
+        const b = Math.floor(Phaser.Math.Linear(0xe6, 0xc8, t));
+        g.fillStyle((r << 16) | (gr << 8) | b, 1);
+        g.fillRect(0, (i * this.h) / wallSteps, this.w, this.h / wallSteps + 1);
       }
-    }
+      // Golden overlay
+      g.fillStyle(0xdaa520, 0.1);
+      g.fillRect(0, 0, this.w, this.h);
 
-    // Stone arches with depth
-    for (let i = 0; i < 5; i++) {
-      const ax = 200 + i * 380;
-      // Arch shadow (depth)
-      g.lineStyle(12, 0x7a6345, 0.3);
-      g.beginPath();
-      g.arc(ax + 3, 203, 152, Math.PI, 0, false);
-      g.strokePath();
-      // Main arch
-      g.lineStyle(10, 0x8b4513, 1);
-      g.beginPath();
-      g.arc(ax, 200, 150, Math.PI, 0, false);
-      g.strokePath();
-      // Inner arch highlight
-      g.lineStyle(4, 0xa0764f, 0.6);
-      g.beginPath();
-      g.arc(ax, 200, 140, Math.PI, 0, false);
-      g.strokePath();
-      // Pillar bases
-      g.fillStyle(0x8b4513, 1);
-      g.fillRect(ax - 155, 200, 14, 200);
-      g.fillRect(ax + 141, 200, 14, 200);
-      // Pillar highlights
-      g.fillStyle(0xa0764f, 0.4);
-      g.fillRect(ax - 153, 200, 4, 200);
-      g.fillRect(ax + 143, 200, 4, 200);
-    }
+      // Stone wall texture - subtle brick pattern
+      g.fillStyle(0x000000, 0.03);
+      for (let row = 0; row < Math.floor(this.h / 30); row++) {
+        const ry = row * 30;
+        g.fillRect(0, ry, this.w, 1);
+        const offset = row % 2 === 0 ? 0 : 40;
+        for (let col = offset; col < this.w; col += 80) {
+          g.fillRect(col, ry, 1, 30);
+        }
+      }
 
-    // Wooden floor with plank texture
-    const floorY = this.h - 120;
-    const plankColors = [0xb8860b, 0xa87808, 0xc89418];
-    for (let py = floorY; py < this.h; py += 20) {
-      const idx = Math.floor((py - floorY) / 20) % plankColors.length;
-      g.fillStyle(plankColors[idx], 1);
-      g.fillRect(0, py, this.w, 20);
-      // Plank line
-      g.fillStyle(0x000000, 0.05);
-      g.fillRect(0, py, this.w, 1);
-    }
-    // Floor edge
-    g.fillStyle(0x8b6914, 1);
-    g.fillRect(0, floorY - 4, this.w, 6);
+      // Stone arches with depth
+      for (let i = 0; i < 5; i++) {
+        const ax = 200 + i * 380;
+        // Arch shadow (depth)
+        g.lineStyle(12, 0x7a6345, 0.3);
+        g.beginPath();
+        g.arc(ax + 3, 203, 152, Math.PI, 0, false);
+        g.strokePath();
+        // Main arch
+        g.lineStyle(10, 0x8b4513, 1);
+        g.beginPath();
+        g.arc(ax, 200, 150, Math.PI, 0, false);
+        g.strokePath();
+        // Inner arch highlight
+        g.lineStyle(4, 0xa0764f, 0.6);
+        g.beginPath();
+        g.arc(ax, 200, 140, Math.PI, 0, false);
+        g.strokePath();
+        // Pillar bases
+        g.fillStyle(0x8b4513, 1);
+        g.fillRect(ax - 155, 200, 14, 200);
+        g.fillRect(ax + 141, 200, 14, 200);
+        // Pillar highlights
+        g.fillStyle(0xa0764f, 0.4);
+        g.fillRect(ax - 153, 200, 4, 200);
+        g.fillRect(ax + 143, 200, 4, 200);
+      }
 
-    // Stained glass windows with jewel colors and decorative frames
-    const windowPositions = [200, 580, 960, 1340, 1720];
-    const jewelColors = [
-      [0xcc0000, 0xff3333, 0x880000], // Ruby
-      [0x0000cc, 0x3355ff, 0x000088], // Sapphire
-      [0x00aa00, 0x33cc33, 0x006600], // Emerald
-      [0xddaa00, 0xffcc33, 0x886600], // Topaz
-      [0xcc00cc, 0xff33ff, 0x880088], // Amethyst
-    ];
-    for (let i = 0; i < 5; i++) {
-      const wx = windowPositions[i] - 45;
-      const wy = 60;
-      const ww = 90;
-      const wh = 150;
-
-      // Window frame (ornate)
-      g.fillStyle(0x7a5c10, 1);
-      g.fillRect(wx - 8, wy - 8, ww + 16, wh + 16);
+      // Wooden floor with plank texture
+      const floorY = this.h - 120;
+      const plankColors = [0xb8860b, 0xa87808, 0xc89418];
+      for (let py = floorY; py < this.h; py += 20) {
+        const idx = Math.floor((py - floorY) / 20) % plankColors.length;
+        g.fillStyle(plankColors[idx], 1);
+        g.fillRect(0, py, this.w, 20);
+        // Plank line
+        g.fillStyle(0x000000, 0.05);
+        g.fillRect(0, py, this.w, 1);
+      }
+      // Floor edge
       g.fillStyle(0x8b6914, 1);
-      g.fillRect(wx - 5, wy - 5, ww + 10, wh + 10);
+      g.fillRect(0, floorY - 4, this.w, 6);
 
-      // Stained glass background
-      const jc = jewelColors[i];
-      g.fillStyle(jc[0], 0.5);
-      g.fillRect(wx, wy, ww, wh);
+      // Stained glass windows with jewel colors and decorative frames
+      const windowPositions = [200, 580, 960, 1340, 1720];
+      const jewelColors = [
+        [0xcc0000, 0xff3333, 0x880000], // Ruby
+        [0x0000cc, 0x3355ff, 0x000088], // Sapphire
+        [0x00aa00, 0x33cc33, 0x006600], // Emerald
+        [0xddaa00, 0xffcc33, 0x886600], // Topaz
+        [0xcc00cc, 0xff33ff, 0x880088], // Amethyst
+      ];
+      for (let i = 0; i < 5; i++) {
+        const wx = windowPositions[i] - 45;
+        const wy = 60;
+        const ww = 90;
+        const wh = 150;
 
-      // Glass panels with jewel tones
-      const panelH = wh / 3;
-      g.fillStyle(jc[1], 0.4);
-      g.fillRect(wx + 4, wy + 4, ww / 2 - 6, panelH - 4);
-      g.fillStyle(jc[2], 0.5);
-      g.fillRect(wx + ww / 2 + 2, wy + 4, ww / 2 - 6, panelH - 4);
-      g.fillStyle(jc[0], 0.6);
-      g.fillRect(wx + 4, wy + panelH + 2, ww - 8, panelH - 4);
-      g.fillStyle(jc[1], 0.3);
-      g.fillRect(wx + 4, wy + panelH * 2 + 2, ww / 2 - 6, panelH - 6);
-      g.fillStyle(jc[2], 0.4);
-      g.fillRect(wx + ww / 2 + 2, wy + panelH * 2 + 2, ww / 2 - 6, panelH - 6);
+        // Window frame (ornate)
+        g.fillStyle(0x7a5c10, 1);
+        g.fillRect(wx - 8, wy - 8, ww + 16, wh + 16);
+        g.fillStyle(0x8b6914, 1);
+        g.fillRect(wx - 5, wy - 5, ww + 10, wh + 10);
 
-      // Light glow from windows
-      g.fillStyle(jc[1], 0.06);
-      g.fillCircle(windowPositions[i], wy + wh / 2, 100);
+        // Stained glass background
+        const jc = jewelColors[i];
+        g.fillStyle(jc[0], 0.5);
+        g.fillRect(wx, wy, ww, wh);
 
-      // Lead lines (cross frame)
-      g.fillStyle(0x5c4a10, 1);
-      g.fillRect(wx + ww / 2 - 2, wy, 4, wh);
-      g.fillRect(wx, wy + panelH - 2, ww, 4);
-      g.fillRect(wx, wy + panelH * 2 - 2, ww, 4);
+        // Glass panels with jewel tones
+        const panelH = wh / 3;
+        g.fillStyle(jc[1], 0.4);
+        g.fillRect(wx + 4, wy + 4, ww / 2 - 6, panelH - 4);
+        g.fillStyle(jc[2], 0.5);
+        g.fillRect(wx + ww / 2 + 2, wy + 4, ww / 2 - 6, panelH - 4);
+        g.fillStyle(jc[0], 0.6);
+        g.fillRect(wx + 4, wy + panelH + 2, ww - 8, panelH - 4);
+        g.fillStyle(jc[1], 0.3);
+        g.fillRect(wx + 4, wy + panelH * 2 + 2, ww / 2 - 6, panelH - 6);
+        g.fillStyle(jc[2], 0.4);
+        g.fillRect(wx + ww / 2 + 2, wy + panelH * 2 + 2, ww / 2 - 6, panelH - 6);
 
-      // Decorative circle at top
-      g.lineStyle(3, 0x8b6914, 1);
-      g.strokeCircle(windowPositions[i], wy + 30, 18);
-      g.fillStyle(jc[1], 0.5);
-      g.fillCircle(windowPositions[i], wy + 30, 16);
+        // Light glow from windows
+        g.fillStyle(jc[1], 0.06);
+        g.fillCircle(windowPositions[i], wy + wh / 2, 100);
+
+        // Lead lines (cross frame)
+        g.fillStyle(0x5c4a10, 1);
+        g.fillRect(wx + ww / 2 - 2, wy, 4, wh);
+        g.fillRect(wx, wy + panelH - 2, ww, 4);
+        g.fillRect(wx, wy + panelH * 2 - 2, ww, 4);
+
+        // Decorative circle at top
+        g.lineStyle(3, 0x8b6914, 1);
+        g.strokeCircle(windowPositions[i], wy + 30, 18);
+        g.fillStyle(jc[1], 0.5);
+        g.fillCircle(windowPositions[i], wy + 30, 16);
+      }
     }
 
     // Title
     this.add.text(this.w / 2, 30, this.lang === 'he' ? '🎉 בר מצווה! 🎉' : '🎉 Bar Mitzvah! 🎉', {
-      fontSize: '48px', color: '#daa520', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#daa520', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Characters - family gathering
     const npcs = [
-      { x: 300, color: 0x2f4f4f, name: this.lang === 'he' ? 'אבא' : 'Dad' },
-      { x: 500, color: 0x800080, name: this.lang === 'he' ? 'אמא' : 'Mom' },
-      { x: 1400, color: 0x808080, name: this.lang === 'he' ? 'סבא' : 'Grandpa' },
-      { x: 1600, color: 0xcd853f, name: this.lang === 'he' ? 'סבתא' : 'Grandma' },
+      { x: 300, charKey: 'npc_dad', name: this.lang === 'he' ? 'אבא' : 'Dad' },
+      { x: 500, charKey: 'npc_mom', name: this.lang === 'he' ? 'אמא' : 'Mom' },
+      { x: 1400, charKey: 'npc_grandpa', name: this.lang === 'he' ? 'סבא' : 'Grandpa' },
+      { x: 1600, charKey: 'npc_grandma', name: this.lang === 'he' ? 'סבתא' : 'Grandma' },
     ];
 
     for (const npc of npcs) {
-      this.drawCharacterPlaceholder(npc.x, this.h - 200, npc.color, npc.name);
+      this.createNPC(npc.charKey, npc.x, this.h - 200, npc.name, 'down', 2);
     }
 
     // Player (center, celebrating)
-    this.drawCharacterPlaceholder(this.w / 2, this.h - 200, COLORS.ACCENT, this.store.playerName || undefined);
+    this.createCharacterSprite('player', this.w / 2, this.h - 200, 2, this.store.playerName || undefined);
 
     // Falling candy animation - varied shapes and colors
     const candyColors = [0xff6347, 0xffd700, 0x00bfff, 0x32cd32, 0xff69b4, 0xff8c00, 0x9370db];
@@ -223,13 +225,15 @@ export class BarMitzvahScene extends BaseScene {
     this.time.delayedCall(1000, async () => {
       await this.showDialogue(
         this.lang === 'he' ? 'אבא' : 'Dad',
-        this.lang === 'he' ? 'מזל טוב! היום אתה נהיה גבר!' : 'Congratulations! Today you become a man!'
+        this.lang === 'he' ? 'מזל טוב! היום אתה נהיה גבר!' : 'Congratulations! Today you become a man!',
+        PORTRAIT_KEYS.npc_dad
       );
       await this.showDialogue(
         this.lang === 'he' ? 'סבא' : 'Grandpa',
         this.lang === 'he'
           ? `יש לנו מתנה בשבילך - ${formatCurrency(BAR_MITZVAH_MONEY, 'he')}! תשתמש בזה בחוכמה.`
-          : `We have a gift for you - ${formatCurrency(BAR_MITZVAH_MONEY, 'en')}! Use it wisely.`
+          : `We have a gift for you - ${formatCurrency(BAR_MITZVAH_MONEY, 'en')}! Use it wisely.`,
+        PORTRAIT_KEYS.npc_grandpa
       );
 
       // Give money
@@ -240,7 +244,8 @@ export class BarMitzvahScene extends BaseScene {
         this.lang === 'he' ? 'אמא' : 'Mom',
         this.lang === 'he'
           ? 'איזה יופי! עכשיו אתה יכול להשקיע את הכסף הזה.'
-          : 'How wonderful! Now you can invest this money.'
+          : 'How wonderful! Now you can invest this money.',
+        PORTRAIT_KEYS.npc_mom
       );
 
       // Show continue button

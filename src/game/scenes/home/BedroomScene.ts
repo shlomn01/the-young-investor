@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS } from '../../../config/constants';
 
 export class BedroomScene extends BaseScene {
   private variant = 1;
@@ -15,7 +15,8 @@ export class BedroomScene extends BaseScene {
   create() {
     super.create();
 
-    // Interior room with lavender walls and wood floor
+    // Interior room: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.BEDROOM)) {
     this.drawInteriorRoom(0xe6e0f0, 0x8b6b4a, { woodFloor: true, baseboard: true });
 
     const dg = this.add.graphics();
@@ -150,14 +151,16 @@ export class BedroomScene extends BaseScene {
       dg.fillStyle(bookColors[(b + 5) % bookColors.length], 1);
       dg.fillRect(1115 + b * 28, this.h - 180 - bh, 22, bh);
     }
+    }
 
     // Label
     const label = this.lang === 'he' ? 'חדר שינה' : 'Bedroom';
     this.add.text(this.w / 2, 40, label, {
       fontSize: '32px',
       color: '#333',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Computer interaction
@@ -167,9 +170,10 @@ export class BedroomScene extends BaseScene {
     this.add.text(880, this.h - 560, this.lang === 'he' ? 'לחץ לשימוש במחשב' : 'Click to use computer', {
       fontSize: '18px',
       color: '#ffd700',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       backgroundColor: 'rgba(0,0,0,0.7)',
       padding: { x: 8, y: 4 },
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     computerZone.on('pointerdown', () => {
@@ -177,7 +181,7 @@ export class BedroomScene extends BaseScene {
     });
 
     // Player
-    this.drawCharacterPlaceholder(500, this.h - 200, COLORS.PRIMARY);
+    this.createCharacterSprite('player', 500, this.h - 200, 2);
 
     // Back button
     this.createButton(

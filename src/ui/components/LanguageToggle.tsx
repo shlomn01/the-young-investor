@@ -29,7 +29,7 @@ export function LanguageToggle() {
         padding: '8px 16px',
         cursor: 'pointer',
         fontSize: 16,
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: 'inherit',
         backdropFilter: 'blur(4px)',
         transition: 'background-color 0.2s',
       }}

@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS, PORTRAIT_KEYS } from '../../../config/constants';
 import { GURU_DIALOGUE } from '../../data/guruDialogue';
 
 export class GuruScene extends BaseScene {
@@ -13,10 +13,8 @@ export class GuruScene extends BaseScene {
     super.create();
     this.dialogueIndex = 0;
 
-    // Check if bg_guru texture exists
-    if (this.textures.exists('bg_guru')) {
-      this.add.image(this.w / 2, this.h / 2, 'bg_guru').setDisplaySize(this.w, this.h);
-    } else {
+    // Interior background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.GURU_ROOM)) {
       // Draw a luxury study with bookshelves, desk, warm golden lighting
       this.drawInteriorRoom(0x3a2010, 0x4a2810, { floorHeight: 140, baseboard: true, ceiling: true });
 
@@ -164,15 +162,15 @@ export class GuruScene extends BaseScene {
     // Title
     const title = this.lang === 'he' ? 'פגישה עם המשקיע הגדול' : 'Meeting the Great Investor';
     this.add.text(this.w / 2, 20, title, {
-      fontSize: '32px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '32px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Guru character
     const guruName = this.lang === 'he' ? 'וורן' : 'Warren';
-    this.drawCharacterPlaceholder(1200, this.h - 400, 0xffd700, guruName);
+    this.createNPC('npc_guru', 1200, this.h - 400, guruName, 'down', 2);
 
     // Player
-    this.drawCharacterPlaceholder(700, this.h - 200, COLORS.PRIMARY, this.store.playerName || undefined);
+    this.createCharacterSprite('player', 700, this.h - 200, 2, this.store.playerName || undefined);
 
     // Start dialogue
     this.showNextDialogue();
@@ -197,7 +195,8 @@ export class GuruScene extends BaseScene {
       speakerName = this.lang === 'he' ? 'וורן' : 'Warren';
     }
 
-    await this.showDialogue(speakerName, text);
+    const portrait = line.speaker === 'player' ? PORTRAIT_KEYS.player : PORTRAIT_KEYS.npc_guru;
+    await this.showDialogue(speakerName, text, portrait);
     this.dialogueIndex++;
     this.showNextDialogue();
   }

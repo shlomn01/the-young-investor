@@ -72,7 +72,7 @@ export class TradeScene extends BaseScene {
     // Title
     const roundLabel = this.lang === 'he' ? `סבב מסחר ${this.round}` : `Trading Round ${this.round}`;
     this.add.text(this.w / 2, 30, roundLabel, {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Cash display with panel
@@ -80,7 +80,7 @@ export class TradeScene extends BaseScene {
     cashPanel.fillStyle(0x000000, 0.3);
     cashPanel.fillRoundedRect(30, 18, 300, 36, 8);
     this.add.text(50, 30, `${this.lang === 'he' ? 'מזומן:' : 'Cash:'} ${formatCurrency(this.store.cash, this.lang)}`, {
-      fontSize: '24px', color: '#50c878', fontFamily: 'Arial',
+      fontSize: '24px', color: '#50c878', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
 
     // Stock list (left panel)
@@ -139,15 +139,15 @@ export class TradeScene extends BaseScene {
 
       const name = this.lang === 'he' ? stock.nameHe : stock.nameEn;
       this.add.text(60, sy + 10, name, {
-        fontSize: '24px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+        fontSize: '24px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
       });
 
       this.add.text(60, sy + 40, formatCurrency(currentPrice, this.lang), {
-        fontSize: '20px', color: '#87ceeb', fontFamily: 'Arial',
+        fontSize: '20px', color: '#87ceeb', fontFamily: this.fontFamily, rtl: this.isRtl,
       });
 
       this.add.text(250, sy + 25, `${isUp ? '▲' : '▼'} ${Math.abs(change).toFixed(1)}%`, {
-        fontSize: '20px', color: isUp ? '#50c878' : '#e74c3c', fontFamily: 'Arial',
+        fontSize: '20px', color: isUp ? '#50c878' : '#e74c3c', fontFamily: this.fontFamily,
       });
 
       // Make clickable
@@ -161,7 +161,7 @@ export class TradeScene extends BaseScene {
       const holding = this.store.portfolio[stock.key];
       if (holding.shares > 0) {
         this.add.text(350, sy + 10, `${holding.shares}`, {
-          fontSize: '16px', color: '#ffd700', fontFamily: 'Arial',
+          fontSize: '16px', color: '#ffd700', fontFamily: this.fontFamily,
         }).setOrigin(1, 0);
       }
     }
@@ -186,7 +186,7 @@ export class TradeScene extends BaseScene {
     // Chart title
     const name = this.lang === 'he' ? stock.nameHe : stock.nameEn;
     this.add.text(chartX + chartW / 2, chartY + 20, name, {
-      fontSize: '28px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Draw price line
@@ -210,7 +210,7 @@ export class TradeScene extends BaseScene {
 
       const priceLabel = (maxPrice - (priceRange / 4) * i).toFixed(0);
       this.add.text(chartX + padX - 10, y, `₪${priceLabel}`, {
-        fontSize: '14px', color: '#666', fontFamily: 'Arial',
+        fontSize: '14px', color: '#666', fontFamily: this.fontFamily,
       }).setOrigin(1, 0.5);
     }
 
@@ -275,7 +275,7 @@ export class TradeScene extends BaseScene {
     pricePanel.fillStyle(0x000000, 0.5);
     pricePanel.fillRoundedRect(chartX + chartW / 2 - 140, chartY + chartH - 40, 280, 30, 8);
     this.add.text(chartX + chartW / 2, chartY + chartH - 25, `${this.lang === 'he' ? 'מחיר נוכחי:' : 'Current:'} ${formatCurrency(currentPrice, this.lang)}`, {
-      fontSize: '22px', color: '#ffd700', fontFamily: 'Arial',
+      fontSize: '22px', color: '#ffd700', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(0.5);
   }
 
@@ -301,15 +301,15 @@ export class TradeScene extends BaseScene {
 
     // Holdings info with divider
     this.add.text(panelX + 20, panelY + 20, `${stockName}`, {
-      fontSize: '24px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '24px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
 
     this.add.text(panelX + 20, panelY + 55, `${this.lang === 'he' ? 'מחיר:' : 'Price:'} ${formatCurrency(currentPrice, this.lang)}`, {
-      fontSize: '20px', color: '#87ceeb', fontFamily: 'Arial',
+      fontSize: '20px', color: '#87ceeb', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
 
     this.add.text(panelX + 20, panelY + 85, `${this.lang === 'he' ? 'מניות:' : 'Shares:'} ${holding.shares}`, {
-      fontSize: '20px', color: '#ffd700', fontFamily: 'Arial',
+      fontSize: '20px', color: '#ffd700', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
 
     // Divider
@@ -324,7 +324,7 @@ export class TradeScene extends BaseScene {
     const sellLabel = this.lang === 'he' ? 'מכור' : 'Sell';
 
     this.add.text(panelX + panelW / 2, panelY + 140, buyLabel, {
-      fontSize: '22px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '22px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     for (let i = 0; i < amounts.length; i++) {
@@ -346,7 +346,7 @@ export class TradeScene extends BaseScene {
     // Sell buttons (only from round 2+)
     if (this.round >= 2) {
       this.add.text(panelX + panelW / 2, panelY + 260, sellLabel, {
-        fontSize: '22px', color: '#e74c3c', fontFamily: 'Arial', fontStyle: 'bold',
+        fontSize: '22px', color: '#e74c3c', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
       }).setOrigin(0.5);
 
       for (let i = 0; i < amounts.length; i++) {
@@ -380,7 +380,7 @@ export class TradeScene extends BaseScene {
 
     this.add.text(panelX + 20, panelY + 380,
       `${this.lang === 'he' ? 'שווי אחזקה:' : 'Holdings value:'} ${formatCurrency(totalValue, this.lang)}`, {
-      fontSize: '20px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '20px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     });
   }
 }

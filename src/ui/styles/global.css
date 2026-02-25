@@ -1,3 +1,48 @@
+/* === Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&family=Poppins:wght@400;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+/* === Design System Custom Properties === */
+:root {
+  /* Colors */
+  --color-primary: #4A90D9;
+  --color-secondary: #50C878;
+  --color-accent: #FFD700;
+  --color-danger: #E74C3C;
+  --color-bg-dark: rgba(26, 26, 46, 0.92);
+  --color-bg-dark-solid: #1A1A2E;
+  --color-bg-light: #FAF0E6;
+  --color-text: #FFFFFF;
+  --color-text-muted: #8899AA;
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-glass-light: rgba(255, 255, 255, 0.08);
+
+  /* Typography */
+  --font-he: 'Heebo', sans-serif;
+  --font-en: 'Poppins', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Borders */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-round: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-gold: 0 0 16px rgba(255, 215, 0, 0.3);
+  --shadow-glow-blue: 0 0 16px rgba(74, 144, 217, 0.3);
+}
+
+/* === Reset === */
 * {
   margin: 0;
   padding: 0;
@@ -9,7 +54,11 @@ html, body, #root {
   height: 100%;
   overflow: hidden;
   background-color: #000;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-he);
+}
+
+html[lang="en"] body, body.lang-en {
+  font-family: var(--font-en);
 }
 
 /* Prevent text selection on game elements */
@@ -17,15 +66,147 @@ html, body, #root {
   display: block;
 }
 
-/* Smooth transitions */
+/* === Button System === */
 button {
-  transition: transform 0.1s ease, background-color 0.2s ease;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
 }
 
 button:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 button:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
+
+/* === Glassmorphism Utility Classes === */
+.glass-panel {
+  background: var(--color-bg-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+}
+
+/* === Gold-bordered Panel (for dialogue, important UI) === */
+.gold-panel {
+  background: var(--color-bg-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-glow-gold);
+}
+
+/* === Monospace Numbers (for financial data) === */
+.mono-number {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* === Stock Color Utilities === */
+.stock-solar { color: #4CAF50; }
+.stock-koogle { color: #4285F4; }
+.stock-sesla { color: #9C27B0; }
+.stock-lemon { color: #FFC107; }
+
+/* === Profit/Loss Colors === */
+.profit { color: var(--color-secondary); }
+.loss { color: var(--color-danger); }
+
+/* === Frosted Glass Bar (HUD) === */
+.frosted-bar {
+  background: rgba(26, 26, 46, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* === Menu Button === */
+.menu-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #3a78c2 100%);
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px 48px;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 220px;
+  box-shadow: var(--shadow-sm), var(--shadow-glow-blue);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.menu-btn:hover {
+  box-shadow: var(--shadow-md), 0 0 24px rgba(74, 144, 217, 0.5);
+  transform: scale(1.05);
+}
+
+.menu-btn.secondary {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, #3daa64 100%);
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(80, 200, 120, 0.3);
+}
+
+.menu-btn.secondary:hover {
+  box-shadow: var(--shadow-md), 0 0 24px rgba(80, 200, 120, 0.5);
+}
+
+/* === Newspaper Vintage Style === */
+.newspaper-layout {
+  background: #F5F0E1;
+  color: #2C2C2C;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  border: 3px double #8B7355;
+  box-shadow: var(--shadow-lg);
+}
+
+/* === Keyframe Animations === */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes typewriter-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-slide-in { animation: slide-in-bottom 0.3s ease-out; }
+.animate-fade-in { animation: fade-in 0.3s ease-out; }

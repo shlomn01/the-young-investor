@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { COLORS, BG_KEYS } from '../../../config/constants';
 
 interface QuizQuestion {
   question: string;
@@ -44,6 +44,8 @@ export class PercentsGame extends BaseScene {
     this.score = 0;
     this.questions = this.lang === 'he' ? QUESTIONS.he : QUESTIONS.en;
 
+    // Background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.PERCENTS_GAME)) {
     // Rich gradient background (dark blue to purple)
     this.drawGradientBg(0x0d0b3e, 0x2a0845);
 
@@ -105,13 +107,14 @@ export class PercentsGame extends BaseScene {
       const bladeH = 3 + Math.random() * 6;
       g.fillRect(gx, platY - 5 - bladeH, 2, bladeH);
     }
+    } // end fallback background
 
     // Title with glow effect
     const titleGlow = this.add.text(this.w / 2, 30, this.lang === 'he' ? 'משחק האחוזים!' : 'The Percentage Game!', {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5).setAlpha(0.3).setScale(1.05);
     this.add.text(this.w / 2, 30, this.lang === 'he' ? 'משחק האחוזים!' : 'The Percentage Game!', {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
     // Pulse the glow
     this.tweens.add({
@@ -130,18 +133,19 @@ export class PercentsGame extends BaseScene {
     scorePanel.strokeRoundedRect(this.w - 180, 12, 160, 44, 10);
 
     this.add.text(this.w - 165, 22, this.lang === 'he' ? 'ניקוד:' : 'Score:', {
-      fontSize: '16px', color: '#aaaaaa', fontFamily: 'Arial',
+      fontSize: '16px', color: '#aaaaaa', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
     this.scoreText = this.add.text(this.w - 40, 34, `${this.score}/${this.questions.length}`, {
-      fontSize: '28px', color: '#50c878', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#50c878', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(1, 0.5);
 
     // Progress dots
+    const dotG = this.add.graphics();
     for (let i = 0; i < this.questions.length; i++) {
       const dotColor = i < this.score ? 0x50c878 : (i === this.currentQuestion ? 0xffd700 : 0x444466);
       const dotX = this.w / 2 - (this.questions.length * 20) / 2 + i * 20 + 10;
-      g.fillStyle(dotColor, 1);
-      g.fillCircle(dotX, 75, 5);
+      dotG.fillStyle(dotColor, 1);
+      dotG.fillCircle(dotX, 75, 5);
     }
 
     // Question text with panel background
@@ -150,9 +154,9 @@ export class PercentsGame extends BaseScene {
     qPanel.fillRoundedRect(this.w / 2 - 500, 90, 1000, 60, 12);
 
     this.questionText = this.add.text(this.w / 2, 120, '', {
-      fontSize: '28px', color: '#ffffff', fontFamily: 'Arial',
+      fontSize: '28px', color: '#ffffff', fontFamily: this.fontFamily,
       wordWrap: { width: 1400 },
-      align: 'center',
+      align: 'center', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Player on platform
@@ -205,7 +209,7 @@ export class PercentsGame extends BaseScene {
     container.add(highlight);
 
     const label = this.add.text(0, 0, text, {
-      fontSize: '20px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '20px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
     container.add(label);
 
@@ -261,8 +265,8 @@ export class PercentsGame extends BaseScene {
     const feedback = this.add.text(x, y - 70, text, {
       fontSize: '32px',
       color: correct ? '#50c878' : '#e74c3c',
-      fontFamily: 'Arial',
-      fontStyle: 'bold',
+      fontFamily: this.fontFamily,
+      fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.tweens.add({
@@ -305,11 +309,11 @@ export class PercentsGame extends BaseScene {
 
     const resultTitle = this.lang === 'he' ? 'תוצאות' : 'Results';
     this.add.text(this.w / 2, panelY + 40, resultTitle, {
-      fontSize: '48px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.add.text(this.w / 2, panelY + 120, `${this.score} / ${this.questions.length}`, {
-      fontSize: '64px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '64px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     const rating = this.score >= 5 ? '⭐⭐⭐' : this.score >= 3 ? '⭐⭐' : '⭐';

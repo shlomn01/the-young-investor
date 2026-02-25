@@ -89,7 +89,7 @@ export class AsteroidsGame extends BaseScene {
 
     // Title
     this.add.text(this.w / 2, 20, this.lang === 'he' ? 'אסטרואידים!' : 'Asteroids!', {
-      fontSize: '32px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '32px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Score & Lives with panels
@@ -97,14 +97,14 @@ export class AsteroidsGame extends BaseScene {
     scorePanel.fillStyle(0x000000, 0.4);
     scorePanel.fillRoundedRect(30, 12, 200, 36, 8);
     this.scoreText = this.add.text(50, 20, `${this.lang === 'he' ? 'ניקוד:' : 'Score:'} 0`, {
-      fontSize: '24px', color: '#50c878', fontFamily: 'Arial',
+      fontSize: '24px', color: '#50c878', fontFamily: this.fontFamily, rtl: this.isRtl,
     });
 
     const livesPanel = this.add.graphics();
     livesPanel.fillStyle(0x000000, 0.4);
     livesPanel.fillRoundedRect(this.w - 130, 12, 110, 36, 8);
     this.livesText = this.add.text(this.w - 50, 20, `❤️ ${this.lives}`, {
-      fontSize: '24px', color: '#e74c3c', fontFamily: 'Arial',
+      fontSize: '24px', color: '#e74c3c', fontFamily: this.fontFamily,
     }).setOrigin(1, 0);
 
     // Ship - more detailed design
@@ -428,7 +428,7 @@ export class AsteroidsGame extends BaseScene {
       const label = this.add.text(0, 0, stockName, {
         fontSize: size === 'big' ? '14px' : '10px',
         color: '#ffffff',
-        fontFamily: 'Arial',
+        fontFamily: this.fontFamily,
       }).setOrigin(0.5);
       container.add(label);
     }
@@ -523,12 +523,12 @@ export class AsteroidsGame extends BaseScene {
 
     this.add.text(this.w / 2, panelY + 50,
       this.lang === 'he' ? 'המשחק נגמר!' : 'Game Over!', {
-      fontSize: '56px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '56px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     this.add.text(this.w / 2, panelY + 140,
       `${this.lang === 'he' ? 'ניקוד:' : 'Score:'} ${this.score}`, {
-      fontSize: '40px', color: '#ffffff', fontFamily: 'Arial',
+      fontSize: '40px', color: '#ffffff', fontFamily: this.fontFamily, rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Score rating

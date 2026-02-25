@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 export interface BridgeEvents {
   // Phaser -> React
   'scene-changed': (sceneKey: string) => void;
-  'show-dialogue': (data: { speaker: string; text: string; onComplete?: () => void }) => void;
+  'show-dialogue': (data: { speaker: string; text: string; portrait?: string; onComplete?: () => void }) => void;
   'hide-dialogue': () => void;
   'show-trade-panel': (data: { round: number }) => void;
   'hide-trade-panel': () => void;

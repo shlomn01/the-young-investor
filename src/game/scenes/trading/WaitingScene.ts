@@ -35,7 +35,7 @@ export class WaitingScene extends BaseScene {
     // Title
     const title = this.lang === 'he' ? 'זמן עובר...' : 'Time passes...';
     this.add.text(this.w / 2, 60, title, {
-      fontSize: '48px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '48px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Calendar graphic
@@ -78,12 +78,12 @@ export class WaitingScene extends BaseScene {
 
     // Month name display on calendar
     const calMonthText = this.add.text(calX, calY - calH / 2 + 25, '', {
-      fontSize: '28px', color: '#ffffff', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '28px', color: '#ffffff', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Large date number on calendar body
     const calDateText = this.add.text(calX, calY + 30, '', {
-      fontSize: '72px', color: '#333333', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '72px', color: '#333333', fontFamily: this.fontFamily, fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Animate through months
@@ -150,7 +150,7 @@ export class WaitingScene extends BaseScene {
 
     const summaryTitle = this.lang === 'he' ? 'סיכום תקופה' : 'Period Summary';
     this.add.text(this.w / 2, 320, summaryTitle, {
-      fontSize: '36px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Divider under title
@@ -193,7 +193,7 @@ export class WaitingScene extends BaseScene {
       }
 
       const text = this.add.text(this.w / 2 - 350, y, '', {
-        fontSize: '22px', color: '#ffffff', fontFamily: 'Arial',
+        fontSize: '22px', color: '#ffffff', fontFamily: this.fontFamily, rtl: this.isRtl,
       });
 
       // Animate text appearing
@@ -231,7 +231,7 @@ export class WaitingScene extends BaseScene {
       totalBg.fillRoundedRect(this.w / 2 - 250, y + 20, 500, 50, 10);
 
       const totalText = this.add.text(this.w / 2, y + 45, `${this.lang === 'he' ? 'סה"כ:' : 'Total:'} ${formatCurrency(total, this.lang)}`, {
-        fontSize: '32px', color: '#ffd700', fontFamily: 'Arial', fontStyle: 'bold',
+        fontSize: '32px', color: '#ffd700', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
       }).setOrigin(0.5).setAlpha(0).setScale(0.8);
 
       this.tweens.add({

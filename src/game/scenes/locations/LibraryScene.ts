@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS, PORTRAIT_KEYS } from '../../../config/constants';
 import { phaserBridge } from '../../../utils/phaserBridge';
 
 export class LibraryScene extends BaseScene {
@@ -16,6 +16,8 @@ export class LibraryScene extends BaseScene {
   create() {
     super.create();
 
+    // Interior background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.LIBRARY)) {
     // Interior room with parchment-colored walls and wood floor
     this.drawInteriorRoom(0xf5ead0, 0x8b6b4a, { woodFloor: true, baseboard: true, ceiling: true });
 
@@ -107,14 +109,16 @@ export class LibraryScene extends BaseScene {
       dg.fillRect(1025, this.h - 296 + i * 4, 40, 1);
       dg.fillRect(1076, this.h - 296 + i * 4, 40, 1);
     }
+    } // end fallback
 
     // Title
     const title = this.lang === 'he' ? 'הספרייה' : 'The Library';
     this.add.text(this.w / 2, 40, title, {
       fontSize: '36px',
       color: '#333',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       fontStyle: 'bold',
+      rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Newspaper on table
@@ -122,9 +126,10 @@ export class LibraryScene extends BaseScene {
     const newspaper = this.add.text(925, this.h - 320, newspaperLabel, {
       fontSize: '22px',
       color: '#333',
-      fontFamily: 'Arial',
+      fontFamily: this.fontFamily,
       backgroundColor: '#fffff0',
       padding: { x: 12, y: 8 },
+      rtl: this.isRtl,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     newspaper.on('pointerdown', () => {
@@ -133,18 +138,18 @@ export class LibraryScene extends BaseScene {
 
     // Librarian
     const librarianName = this.lang === 'he' ? 'הספרנית' : 'Librarian';
-    const librarian = this.drawCharacterPlaceholder(500, this.h - 200, 0x800080, librarianName);
+    const librarian = this.createNPC('npc_librarian', 500, this.h - 200, librarianName, 'down', 2);
     librarian.setInteractive(new Phaser.Geom.Rectangle(-30, -60, 60, 120), Phaser.Geom.Rectangle.Contains);
 
     librarian.on('pointerdown', async () => {
       const text = this.variant === 1
         ? (this.lang === 'he' ? 'שלום! בוא תקרא את העיתון. יש חדשות מעניינות על חברת סולאר!' : 'Hello! Come read the newspaper. There\'s interesting news about Solar!')
         : (this.lang === 'he' ? 'יש חדשות חדשות! קוגל וססלה פרסמו דוחות מעניינים.' : 'There\'s new news! Koogle and Sesla published interesting reports.');
-      await this.showDialogue(librarianName, text);
+      await this.showDialogue(librarianName, text, PORTRAIT_KEYS.npc_librarian);
     });
 
     // Player
-    this.drawCharacterPlaceholder(400, this.h - 200, COLORS.PRIMARY);
+    this.createCharacterSprite('player', 400, this.h - 200, 2);
 
     // Back button
     const streetMap: Record<number, number> = { 1: 3, 2: 6 };

@@ -37,7 +37,7 @@ export class Player {
       const nameText = scene.add.text(0, -65, name, {
         fontSize: '16px',
         color: '#ffffff',
-        fontFamily: 'Arial',
+        fontFamily: 'Heebo, Poppins, sans-serif',
       }).setOrigin(0.5);
       this.container.add(nameText);
     }

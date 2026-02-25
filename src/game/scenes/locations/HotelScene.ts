@@ -1,5 +1,5 @@
 import { BaseScene } from '../BaseScene';
-import { COLORS } from '../../../config/constants';
+import { BG_KEYS, PORTRAIT_KEYS } from '../../../config/constants';
 
 export class HotelScene extends BaseScene {
   constructor() {
@@ -9,10 +9,8 @@ export class HotelScene extends BaseScene {
   create() {
     super.create();
 
-    // Check if bg_hotel_lobby texture exists
-    if (this.textures.exists('bg_hotel_lobby')) {
-      this.add.image(this.w / 2, this.h / 2, 'bg_hotel_lobby').setDisplaySize(this.w, this.h);
-    } else {
+    // Interior background: use image if available, fallback to programmatic
+    if (!this.tryShowBackground(BG_KEYS.HOTEL_LOBBY)) {
       // Draw the scene manually
       this.drawInteriorRoom(0xfff8dc, 0x800000, { floorHeight: 120, baseboard: true, ceiling: true });
 
@@ -136,17 +134,17 @@ export class HotelScene extends BaseScene {
     // Title
     const title = this.lang === 'he' ? 'לובי המלון' : 'Hotel Lobby';
     this.add.text(this.w / 2, 40, title, {
-      fontSize: '36px', color: '#333', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '36px', color: '#333', fontFamily: this.fontFamily, fontStyle: 'bold', rtl: this.isRtl,
     }).setOrigin(0.5);
 
     // Receptionist
     const receptionistName = this.lang === 'he' ? 'פקיד הקבלה' : 'Receptionist';
-    const receptionist = this.drawCharacterPlaceholder(400, this.h - 150, 0x191970, receptionistName);
+    const receptionist = this.createNPC('npc_receptionist', 400, this.h - 150, receptionistName, 'down', 2);
     receptionist.setInteractive(new Phaser.Geom.Rectangle(-30, -60, 60, 120), Phaser.Geom.Rectangle.Contains);
     receptionist.on('pointerdown', async () => {
       await this.showDialogue(receptionistName, this.lang === 'he'
         ? 'ברוך הבא למלון! המשקיע הגדול מחכה לך בקומה העליונה.'
-        : 'Welcome to the hotel! The great investor is waiting for you upstairs.');
+        : 'Welcome to the hotel! The great investor is waiting for you upstairs.', PORTRAIT_KEYS.npc_receptionist);
     });
 
     // Elevator zone
@@ -154,8 +152,8 @@ export class HotelScene extends BaseScene {
       .setInteractive({ useHandCursor: true });
 
     this.add.text(this.w / 2, 170, this.lang === 'he' ? 'לחץ להעלות במעלית' : 'Click to take elevator', {
-      fontSize: '20px', color: '#ffd700', fontFamily: 'Arial',
-      backgroundColor: 'rgba(0,0,0,0.7)', padding: { x: 10, y: 5 },
+      fontSize: '20px', color: '#ffd700', fontFamily: this.fontFamily,
+      backgroundColor: 'rgba(0,0,0,0.7)', padding: { x: 10, y: 5 }, rtl: this.isRtl,
     }).setOrigin(0.5);
 
     elevatorZone.on('pointerdown', () => {
@@ -163,7 +161,7 @@ export class HotelScene extends BaseScene {
     });
 
     // Player
-    this.drawCharacterPlaceholder(300, this.h - 150, COLORS.PRIMARY);
+    this.createCharacterSprite('player', 300, this.h - 150, 2);
 
     // Back
     this.createButton(100, this.h - 40,
